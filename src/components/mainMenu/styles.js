@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const backgroundColor = "#333333";
+const backgroundColor = "#1a1a1a";
 const hoverBackgroundColor = "#2b2b2b";
 const color = "#d4d4d4";
 const hoverColor = "orange";

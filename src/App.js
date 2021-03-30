@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { auth } from "./firebase";
-
+import './App.css'
 import Challenges from "./components/challenges/Challenges";
 import Gallery from "./components/gallery/Gallery";
 import Home from "./components/home/Home";
@@ -53,7 +53,7 @@ function App() {
 
   return (
     <div className="App">
-      <Backdrop setSelected={setSelected} selected={selected}/>
+      <Backdrop setSelected={setSelected} selected={selected} onClick={()=>{setSelected('home')}}/>
       <MainMenu setSelected={setSelected} menuItems={menuItems} user={user} />
       <Login setSelected={setSelected} />
       

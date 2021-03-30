@@ -5,7 +5,7 @@ const useStyles = makeStyles((theme) => ({
     loginButton: {
         position:'relative',
         fontWeight: "600",
-        backgroundColor: "#333333",
+        backgroundColor: "#1a1a1a",
         color: "#d4d4d4",
         paddingTop: "8px",
         paddingBottom:"8px",

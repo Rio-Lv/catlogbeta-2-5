@@ -11,11 +11,10 @@ import "./list.css";
 
 const style = { position: "fixed", right: "5px", top: "5px" };
 
-function Login() {
+function Login(props) {
   const [user, setUser] = useState(null);
   const [open, setOpen] = useState(false);
   const classes = useStyles();
-
   useEffect(() => {
     // check auth state changed
     auth.onAuthStateChanged((response) => {
@@ -23,10 +22,11 @@ function Login() {
         setUser(response);
         if (user) {
           console.log("from authStateChange in app.js");
-          console.log(user.uid);
+          console.log(user.uid);     
+          props.setSelected("home")
         }
       } else {
-        console.log("auth function no response");
+        console.log("auth function no response");    
         setUser(null);
       }
     });
@@ -65,6 +65,7 @@ function Login() {
             onClick={() => {
                 firebase.auth().signOut().then(() => {
                     // Sign-out successful.
+                    props.setSelected('home')
                   }).catch((error) => {
                     // An error happened.
                   });
@@ -82,6 +83,7 @@ function Login() {
                   className={classes.loginButton}
                   onClick={() => {
                     setOpen(true);
+                    props.setSelected('login')
                   }}
                 >
                   Login
@@ -163,6 +165,7 @@ function Login() {
                 className = {classes.loginButton}
                 onClick={() => {
                   setOpen(true);
+                  props.setSelected('login')
                 }}
               >
                 Login
