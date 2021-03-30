@@ -1,0 +1,17 @@
+.login-box {
+    opacity: 1;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-190px, -50%);
+    display: inline-block;
+    text-align: center;
+}
+
+.login-list {
+    list-style: none;
+}
+
+li:not(:last-child) {
+    margin-bottom: 15px;
+}
