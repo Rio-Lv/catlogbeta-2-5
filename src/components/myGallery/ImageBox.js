@@ -1,6 +1,7 @@
 import { Translate } from "@material-ui/icons";
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
+import {getRGB} from "./functions"
 
 const imageWidth = 300;
 const pad = 10;
