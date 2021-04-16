@@ -17,7 +17,7 @@ const Image = Styled.img`
 function Backdrop(props) {
   const [size, setSize] = useState(window.innerWidth);
 
-  const url = "https://images.wallpaperscraft.com/image/skull_space_suit_art_121221_2000x2000.jpg";
+  const url = "https://w.wallhaven.cc/full/vg/wallhaven-vg67m3.png";
 
   const sizeImage = () => {
     if (window.innerWidth > 600) {

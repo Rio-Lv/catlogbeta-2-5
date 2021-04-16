@@ -1,36 +1,40 @@
-import { Translate } from "@material-ui/icons";
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import {getRGB} from "./functions"
+import {db} from '../../firebase'
+import { getRGB } from "./functions";
 
 const imageWidth = 300;
 const pad = 10;
 const Box = styled.div`
-  
   width: ${imageWidth}px;
-  height: ${imageWidth}px;
+  height: ${imageWidth + 44}px;
   margin: ${pad}px;
-  border: 3px solid red;
-  border-radius: 10px;
+  border-radius: 13px;
   background-repeat: no-repeat;
   background-size: cover;
+  transition: 0.5s ease;
+
   @media (max-width: 600px) {
     position: static;
-    transform: translate(1%, 0);
+    transform: translate(
+      ${window.innerWidth / 2 - (imageWidth + pad) / 2 - pad * 2}px,
+      0
+    );
   }
 `;
 
 const Text = styled.div`
-  background-color: #333333;
+  background-color: #1a1a1a;
   position: relative;
-  color: white;
   left: 0px;
-  top: 250px;
+  top: 300px;
   padding-bottom: 4px;
   font-size: 30px;
   text-align: center;
   line-height: 40px;
-  border-radius: 5px;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  transition: 0.3s ease;
 `;
 
 // gets image from firestore reference
@@ -38,13 +42,24 @@ const Text = styled.div`
 function ImageBox(props) {
   const [url, setUrl] = useState("");
   const [title, setTitle] = useState("");
+  const [timeleft, setTimeleft] = useState(0);
+
+  const [base, setBase] = useState(0);
+  const [W, setW] = useState(1);
+
+  const [color, setColor] = useState("#ffd6a0");
+  const [borderColor, setBorderColor] = useState("#000000");
+  
+  const { R, G, B } = getRGB(timeleft);
 
   useEffect(() => {
+    // console.log(props.reference)
     try {
-      props.reference.get().then((doc) => {
-        console.log("displaying from submissions Sub Image box");
-        console.log(doc.data());
-        setUrl(doc.data().url);
+      db.doc(props.reference).get().then((doc) => {
+        // console.log("displaying from submissions Sub Image box");
+        // console.log(doc.data().cycle);
+        setTimeleft(doc.data().timeleft);
+        setUrl(doc.data().urlSmall);
         setTitle(doc.data().title);
       });
     } catch (err) {
@@ -52,18 +67,41 @@ function ImageBox(props) {
     }
   }, [props.reference]);
   return (
-    <Box>
-      <img
-        style={{
-          position: "fixed",
-          width: `${imageWidth}px`,
-          borderRadius: "10px",
-        }}
-        src={url}
-        alt=""
-      />
+    <Box
+      style={{ border:timeleft>0? `3px solid rgba(${R * W}, ${G * W}, ${B * W}`:`3px solid${borderColor}` }}
+      onMouseEnter={() => {
+        setBorderColor("#ff8800");
+        setColor("#ff8800");
+        setBase(0);
+        setW(1.2);
+      }}
+      onMouseLeave={() => {
+        setBorderColor("#000000");
+        setColor("#ffd6a0");
+        setBase(120);
+        setW(0.5);
+      }}
+      onClick = {()=>{
+        console.log('imageBox clicked')
+        console.log('props.reference')
+        console.log(props.reference)
+        props.setReference(props.reference);
+      }}
+    >
+      <div>
+        <img
+          style={{
+            position: "fixed",
+            width: `${imageWidth}px`,
+            borderTopRightRadius: "10px",
+            borderTopLeftRadius: "10px",
+          }}
+          src={url}
+          alt=""
+        />
+      </div>
 
-      <Text>{title}</Text>
+      <Text style={{  color: timeleft>0?`rgba(${R * W + base}, ${G * W + base}, ${B * W + base}`:color }}>{title}</Text>
     </Box>
   );
 }

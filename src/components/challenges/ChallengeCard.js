@@ -1,25 +1,43 @@
 import React, { useState, useEffect } from "react";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import {Pbox,Tbox,Tbox2,Card} from './TitleCardStyles'
-import {getRGB,getTimeRemaining} from './upload/functions'
+import { db } from "../../firebase";
+import { Pbox, Tbox, Card } from "./upload/TitleCardStyles";
+import { getRGB, getTimeRemaining } from "./upload/functions";
 // takes an object of the challenge of  in format {title:title,timeleft:timeleft}
-function TitleCard(props) {
+function ChallengeCard(props) {
   const [W, setW] = useState(1);
-  const [base,setBase] = useState(0);
-  const [complete, setComplete] = useState(true);
-  // this equation calculates how close two percentages are to each other
+  const [base, setBase] = useState(0);
+  const [item, setItem] = useState({ title: "", timeleft: 0.0 });
 
-  const { R, G, B } = getRGB(props.item); 
+  const { R, G, B } = getRGB(item);
+  // create the item from mulitple firestore sources
+  useEffect(() => {
+    db.doc(props.reference)
+      .get()
+      .then((doc) => {
+        if (doc.exists) {
+          // console.log(doc.data());
+          const title = doc.data().Title;
+          const timeleft =
+            (doc.data().End - Date.now()) / (doc.data().End - doc.data().Start);
+          setItem({
+            title: title,
+            timeleft: timeleft,
+          });
+        }
+      });
+  }, [props.reference]);
+
   // dim after 3s
   useEffect(() => {
     setTimeout(() => {
       if (window.innerWidth > 600) {
         setW(0);
-        setBase(200)
+        setBase(200);
       }
-    }, 3000 - 1500 * props.item.timeleft);
-  },[]);
+    }, 3000 - 1500 * item.timeleft);
+  }, [item.timeleft]);
   return (
     <Card
       style={{
@@ -36,26 +54,28 @@ function TitleCard(props) {
         setW(0);
       }}
       onClick={() => {
-        props.func();
+        // console.log(props.reference);
+        props.setReference(props.reference);
       }}
     >
       <div style={{ display: "flex", flexDirection: "row" }}>
         <Pbox>
           <CircularProgressbar
             className="progressCirle"
-            value={props.item.timeleft * 100}
-            text={getTimeRemaining(props.item).short}
+            value={item.timeleft * 100}
+            text={getTimeRemaining(item).short}
             strokeWidth={12}
             background
             backgroundPadding={11}
-            
             styles={buildStyles({
               rotation: 0.02,
               strokeLinecap: "round",
               textSize: "20px",
               pathTransitionDuration: 0.5,
               backgroundColor: `rgba(${0}, ${0}, ${0}, ${25 / 100})`,
-              textColor: `rgba(${R * W+base}, ${G * W+base}, ${B * W+base}`,
+              textColor: `rgba(${R * W + base}, ${G * W + base}, ${
+                B * W + base
+              }`,
               pathColor: `rgba(${R * W}, ${G * W}, ${B * W}, ${100 / 100})`,
               trailColor: "none",
             })}
@@ -63,34 +83,14 @@ function TitleCard(props) {
         </Pbox>
         <Tbox
           style={{
-            color: `rgba(${R * W+base}, ${G * W+base}, ${B * W+base}`,
+            color: `rgba(${R * W + base}, ${G * W + base}, ${B * W + base}`,
           }}
         >
-          <div>{props.item.title}</div>
+          <div>{item.title}</div>
         </Tbox>
-        {complete ? (
-          <Tbox2
-            style={{
-              fontSize: `${12}px`,
-              color: `rgba(${R * W+base}, ${G * W+base}, ${B * W+base}`,
-            }}
-          >
-            <div>complete</div>
-          </Tbox2>
-        ) : (
-          <Tbox2
-            style={{
-              fontSize: `${12}px`,
-              color: "grey",
-            }}
-          >
-            {/* <div>{getTimeRemaining(props.item).verbose}</div> */}
-            <div>incomplete</div>
-          </Tbox2>
-        )}
       </div>
     </Card>
   );
 }
 
-export default TitleCard;
+export default ChallengeCard;

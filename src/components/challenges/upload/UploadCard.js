@@ -1,16 +1,25 @@
-import React, { useCallback, useState, useEffect } from "react";
+import React, { useCallback, useState ,useEffect} from "react";
 import { useDropzone } from "react-dropzone";
 import { UploadBox } from "./uploadCardStyles";
 import convert from "image-file-resize";
-import { info, infoHover } from "./info";
+import InfoHover from "./InfoHover";
+import Info from "./Info";
 
 function UploadCard(props) {
+  //props from upload js 
   const [locURL, setLocUrl] = useState("");
   const [moreInfo, setMoreInfo] = useState(false);
+  const [showInfo, setShowInfo] = useState(true);
 
-
+  useEffect(()=>{
+    // close info if image url is detected
+    if(locURL!==""){
+      setShowInfo(false)
+    }
+  },[locURL])
 
   const onDrop = useCallback((files) => {
+    const smallDim = 500;
     const minDim = 1500;
     const maxDim = 3500;
     var _URL = window.URL || window.webkitURL;
@@ -34,6 +43,35 @@ function UploadCard(props) {
           props.setImage(files[0]);
           setLocUrl(image.src);
           props.setAcceptImage(true);
+          //create a small duplicate
+          const imageSmall = files[0];
+          convert({
+            file: imageSmall,
+            width: smallDim,
+            height: smallDim,
+            type: "jpeg",
+          }).then((resp) => {
+            var image = new Image();
+            image.src = _URL.createObjectURL(resp);
+
+            setLocUrl(`${image.src}`);
+
+            image.onload = function () {
+              console.log(
+                this.width +
+                  " " +
+                  this.height +
+                  " this was created in the image converter for smaller images"
+              );
+              //alert(props.week)
+            };
+            image.onerror = function () {
+              alert("not a valid file: " + resp.type);
+            };
+            props.setSmallImage(resp);
+          }).catch((error) => {
+            console.log(error);
+          });
         } else if (
           this.width >= minDim &&
           this.height >= minDim &&
@@ -79,6 +117,34 @@ function UploadCard(props) {
             .catch((error) => {
               console.log(error);
             });
+            const imageSmall = files[0];
+            convert({
+              file: imageSmall,
+              width: smallDim,
+              height: smallDim,
+              type: "jpeg",
+            }).then((resp) => {
+              var image = new Image();
+              image.src = _URL.createObjectURL(resp);
+  
+              setLocUrl(`${image.src}`);
+  
+              image.onload = function () {
+                console.log(
+                  this.width +
+                    " " +
+                    this.height +
+                    " this was created in the image converter for smaller images"
+                );
+                //alert(props.week)
+              };
+              image.onerror = function () {
+                alert("not a valid file: " + resp.type);
+              };
+              props.setSmallImage(resp);
+            }).catch((error) => {
+              console.log(error);
+            });
         } else {
           props.setImage(image);
           setLocUrl(image.src);
@@ -103,7 +169,8 @@ function UploadCard(props) {
         }}
         {...getRootProps({ refKey: "innerRef" })}
       >
-        {moreInfo ? infoHover() : info()}
+        {showInfo? (moreInfo ? <InfoHover/> : <Info/>) :null}
+        
 
         <input {...getInputProps()} />
       </UploadBox>

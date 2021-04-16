@@ -50,109 +50,88 @@ const getTimeRemaining = (item) => {
     };
   }
 };
-const makeSubmission = (user, url, cycle, title) => {
-  const submission = {
-    user: user.uid,
-    displayName: user.displayName,
-    cycle: cycle,
-    title: title,
-    url: url,
-    wins: 0,
-    losses: 0,
-    winrate: 0.5,
-  };
-  return submission;
-};
-const submissionId = (cycle, user) => {
-  return `Cycle${cycle}-From-User-${user.uid}`;
-};
-const referenceId = (cycle) => {
-  return `Cycle${cycle}`;
-};
-const handleUpload = (image, user, cycle, title, setImage) => {
+
+const handleUpload = (image, smallImage, user, item, setImage) => {
+  // connected to Submit card but image is propped from Upload.js
   if (image !== null) {
     console.log("from handle upload in Challenges Sub functions");
     console.log(user.uid);
-    // t.ref.storage
-    //   .delete()
-    //   .then(() => {
-    //     console.log("successfully deleted, ready for replacement");
-    //   })
-    //   .catch((error) => {
-    //     console.log(error);
-    //   });
-    // storing the image
     storage
-      .ref(`submissions/${submissionId(cycle, user)}`)
+      .ref(`submissions/${item.cycle}/${user.uid}`)
       .put(image)
       .then(() => {
         storage
-          .ref(`submissions/${submissionId(cycle, user)}`)
-          .getDownloadURL()
-          .then((url) => {
-            const submission = makeSubmission(user, url, cycle, title);
-            // send to all submissions
-            console.log("sending to submissions");
-            db.collection("submissions")
-              .doc(submissionId(cycle, user))
-              .set(submission, (error) => {
+          .ref(`submissionsSmall/${item.cycle}/${user.uid}`)
+          .put(smallImage)
+          .then(() => {
+            storage
+              .ref(`submissions/${item.cycle}/${user.uid}`)
+              .getDownloadURL()
+              .then((url) => {
+                storage
+                  .ref(`submissionsSmall/${item.cycle}/${user.uid}`)
+                  .getDownloadURL()
+                  .then((urlSmall) => {
+                    const submission = {
+                      user: user.uid,
+                      displayName: user.displayName,
+                      cycle: item.cycle,
+                      title: item.title,
+                      timeleft: item.timeleft,
+                      url: url,
+                      urlSmall: urlSmall,
+                      wins: 0,
+                      losses: 0,
+                      winrate: 0.5,
+                    };
+                    // send to cycle submissions - user
+                    console.log(
+                      `sending to submission to Submissions/AllSubmissions/${item.cycle}`
+                    );
+                    db.collection(`Submissions/AllSubmissions/${item.cycle}`)
+                      .doc(user.uid)
+                      .set(submission, (error) => {
+                        console.log(error);
+                      });
+                    console.log("sending to users");
+
+                    const reference = `Submissions/AllSubmissions/${item.cycle}/${user.uid}`
+                     
+                    // send refence to users
+
+                    //get references from user account
+                    db.collection("users")
+                      .doc(user.uid)
+                      .get()
+                      .then((doc) => {
+                        if (doc.exists) {
+                          const references = doc.data().references;
+                          console.log(references);
+                          if(references.includes(reference)){
+                            console.log('reference already exists')
+                          }else{
+                            db.collection("users")
+                            .doc(user.uid)
+                            .set({ references: [...references,reference] });
+                          }
+                          
+                          
+                        } else {
+                          console.log("setting new doc");
+                          db.collection("users")
+                            .doc(user.uid)
+                            .set({ references: [reference] });
+                        }
+                      });
+                    // clear the image that is in the react hook Image
+                  });
+                setImage(null);
+              })
+              .catch((error) => {
+                // Uh-oh, an error occurred!
+                console.log("error from challenges sub functions");
                 console.log(error);
               });
-            console.log("sending to users");
-
-            const reference = db
-              .collection("submissions")
-              .doc(submissionId(cycle, user));
-            // send refence to users
-
-            //get references from user account
-            db.collection("users")
-              .doc(user.uid)
-              .get()
-              .then((doc) => {
-                if (doc.exists) {
-                  const newReferences = doc.data().references;
-                  console.log(reference)
-
-                  const p = new Promise((resolve, reject) => {
-                    let refStrings = newReferences.map((ref)=>{
-                      return ref.path
-                    })
-                    console.log(refStrings)
-                    const exists = refStrings.includes(reference.path);
-                    console.log(newReferences[0].path);
-                    if (exists) {
-                      resolve("refence already exists");
-                    } else {
-                      reject("does not exist");
-                    }
-                  });
-
-                  p.then((msg) => {
-                    console.log(msg);
-                    db.collection("users")
-                      .doc(user.uid)
-                      .set({ references: newReferences });
-                  }).catch((msg) => {
-                    console.log(msg);
-                    db.collection("users")
-                      .doc(user.uid)
-                      .set({ references: [...newReferences, reference] });
-                  });
-                } else {
-                  console.log("setting new doc");
-                  db.collection("users")
-                    .doc(user.uid)
-                    .set({ references: [reference] });
-                }
-              });
-            // clear the image that is in the react hook Image
-            setImage(null);
-          })
-          .catch((error) => {
-            // Uh-oh, an error occurred!
-            console.log("error from challenges sub functions");
-            console.log(error);
           });
       })
       .catch((err) => {
@@ -167,4 +146,23 @@ const handleUpload = (image, user, cycle, title, setImage) => {
   }
 };
 
-export { getRGB, getTimeRemaining, handleUpload,referenceId };
+// const storeImage = (image, StoragePath) => {
+//   storage
+//     .ref(StoragePath)
+//     .put(image)
+//     .then(() => {
+//       storage
+//         .ref(StoragePath)
+//         .getDownloadURL()
+//         .then((url) => {})
+//         .catch((error) => {
+//           // Uh-oh, an error occurred!
+//           console.log("error from challenges sub functions");
+//           console.log(error);
+//         });
+//     });
+// };
+
+
+
+export { getRGB, getTimeRemaining, handleUpload };

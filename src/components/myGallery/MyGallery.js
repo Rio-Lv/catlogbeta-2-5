@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../../firebase";
 import Grid from "./Grid";
-
+var collator = new Intl.Collator(String, {
+  numeric: true,
+  sensitivity: "base",
+});
 function MyGallery(props) {
   const [references, setReferences] = useState([]);
+
   useEffect(() => {
     db.collection("users")
       .doc(props.user.uid)
       .onSnapshot((snap) => {
         if (snap.exists) {
-          console.log(snap.data());
-          setReferences(snap.data().references);
+          setReferences(snap.data().references.sort());
 
           references.forEach((reference) => {
             var current;
@@ -18,7 +21,6 @@ function MyGallery(props) {
               if (doc.exists) {
                 //console.log('getting doc from reference list in users')
                 console.log(doc.data());
-                current = doc.data();
               } else {
                 console.log("doc not found");
               }
@@ -31,7 +33,7 @@ function MyGallery(props) {
   }, []);
   return (
     <div>
-      <Grid references ={references}></Grid>
+      <Grid references={references.sort(collator.compare)}></Grid>
     </div>
   );
 }

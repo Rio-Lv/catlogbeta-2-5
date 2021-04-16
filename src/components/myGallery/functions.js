@@ -9,9 +9,9 @@ const smoothIso = (X, Y, W) => {
   // console.log("testing out smoothIso result == "  + result)
   return result;
 };
-const getRGB = (item) => {
+const getRGB = (timeleft) => {
   // comes in percentage of week left eg. 0.1 = 10%
-  const T = item.timeleft;
+  const T = timeleft;
   // const R = 255 * (1 - T);
   // const G = 255 * T;
   // const B = 255 * (1 - Math.abs(0.5 - T));

@@ -1,5 +1,6 @@
 import styled from "styled-components";
 const Box = styled.div`
+  display:none;
   left: 50%;
   position: fixed;
   height: 95%;
@@ -7,15 +8,19 @@ const Box = styled.div`
   top: 70px;
   display: flex;
   flex-direction: column;
-  border: 2px solid #333333;
-  border-radius: 10px;
+
   /* background-color: #6d6d6d; */
   opacity: 100%;
- 
+
   overflow: scroll;
   @media (max-width: 600px) {
-    width: auto;
+    height: 98%;
+    width: 99%;
     top: 65px;
+    transform: translate(-50%, -3%);
+    border: 2px solid #000000;
+    border-radius: 5px;
+    display:block;
   }
 `;
 
@@ -27,7 +32,7 @@ const Row = styled.div`
   /* border: 3px solid blue; */
   margin-right: 10px;
 
-  transform: translate(1%, 0);
+  transform: translate(1.5%, 0);
 
   @media (max-width: 600px) {
     width: auto;
@@ -37,4 +42,4 @@ const Row = styled.div`
   }
 `;
 
-export {Box,Row}
+export { Box, Row };

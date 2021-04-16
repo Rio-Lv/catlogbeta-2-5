@@ -3,6 +3,7 @@ import { getRGB, handleUpload } from "./functions";
 import { Submit } from "./submitStyles";
 
 function SubmitCard(props) {
+  // props from upload js
   const [base, setBase] = useState(0);
   const [W, setW] = useState(1);
   const { R, G, B } = getRGB(props.item);
@@ -36,14 +37,14 @@ function SubmitCard(props) {
             setW(0);
           }}
           onClick={() => {
-            console.log(props.item.cycle);
+            console.log(props.item.Cycle);
             handleUpload(
               props.image,
+              props.smallImage,
               props.user,
-              props.item.cycle,
-              props.item.title,
-              props.setImage
-            );
+              props.item,
+              props.setImage    
+            );  
             props.setSelected("home");
           }}
         >
