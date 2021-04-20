@@ -73,7 +73,7 @@ function Login(props) {
             onClick={() => {
                 firebase.auth().signOut().then(() => {
                     // Sign-out successful.
-                    props.setSelected('home')
+                    props.setSelected('Home')
                   }).catch((error) => {
                     // An error happened.
                   });

@@ -1,20 +1,25 @@
 import React, { useState, useEffect } from "react";
-import { getRGB, handleUpload } from "./functions";
+import { getRGBcore, handleUpload } from "./functions";
 import { Submit } from "./submitStyles";
 
 function SubmitCard(props) {
   // props from upload js
   const [base, setBase] = useState(0);
   const [W, setW] = useState(1);
-  const { R, G, B } = getRGB(props.item);
+
+  const timeleft = ((props.item.end - Date.now())/props.item.cycleLength).toFixed(3)
+  const { R, G, B } = getRGBcore(timeleft);
 
   useEffect(() => {
+    console.log('from submit Card')
+    console.log(props.item)
     setTimeout(() => {
       if (window.innerWidth > 600) {
         setW(0);
         setBase(200);
       }
-    }, 3000 - 1500 * props.item.timeleft);
+
+    }, 3000 - 1500 * timeleft);
   }, []);
 
   return (

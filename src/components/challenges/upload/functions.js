@@ -21,6 +21,18 @@ const getRGB = (item) => {
   //   console.log({ T, R, G, B });
   return { R, G, B };
 };
+const getRGBcore = (timeleft) => {
+  // comes in percentage of week left eg. 0.1 = 10%
+  const T = timeleft;
+  // const R = 255 * (1 - T);
+  // const G = 255 * T;
+  // const B = 255 * (1 - Math.abs(0.5 - T));
+  const G = 255 * smoothIso(1, T, 0.5);
+  const B = 255 * smoothIso(0.5, T, 0.2);
+  const R = 255 * smoothIso(0, T, 0.5);
+  //   console.log({ T, R, G, B });
+  return { R, G, B };
+};
 const getTimeRemaining = (item) => {
   const timePercent = item.timeleft; //in percent of a cycle
   const seconds = timePercent * 604800; // seconds in a week
@@ -77,7 +89,8 @@ const handleUpload = (image, smallImage, user, item, setImage) => {
                       displayName: user.displayName,
                       cycle: item.cycle,
                       title: item.title,
-                      timeleft: item.timeleft,
+                      end: item.end,
+                      cycleLength: item.cycleLength,
                       url: url,
                       urlSmall: urlSmall,
                       wins: 0,
@@ -165,4 +178,4 @@ const handleUpload = (image, smallImage, user, item, setImage) => {
 
 
 
-export { getRGB, getTimeRemaining, handleUpload };
+export { getRGB,getRGBcore, getTimeRemaining, handleUpload };

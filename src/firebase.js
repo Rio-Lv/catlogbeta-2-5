@@ -9,12 +9,12 @@ const firebaseConfig = {
   measurementId: "G-RJKQS4F4V4"
 };
 
-// firebase.functions().useEmulator("localhost", 5001);
 const firebaseApp = firebase.initializeApp(firebaseConfig);
 const db = firebaseApp.firestore();
 const auth = firebaseApp.auth();
 const storage = firebaseApp.storage();
 const functions = firebaseApp.functions();
+
 
 
 export {

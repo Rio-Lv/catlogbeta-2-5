@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import {db} from '../../firebase'
-import { getRGB } from "./functions";
+import { getRGBcore } from "./functions";
 
 const imageWidth = 300;
 const pad = 10;
@@ -50,7 +50,7 @@ function ImageBox(props) {
   const [color, setColor] = useState("#ffd6a0");
   const [borderColor, setBorderColor] = useState("#000000");
   
-  const { R, G, B } = getRGB(timeleft*.85);// for some reason, offsetting the time left fixes the color sync with challenges
+  const { R, G, B } = getRGBcore(timeleft);// for some reason, offsetting the time left fixes the color sync with challenges
 
   useEffect(() => {
     // console.log(props.reference)
@@ -58,7 +58,11 @@ function ImageBox(props) {
       db.doc(props.reference).onSnapshot((doc) => {
         // console.log("displaying from submissions Sub Image box");
         // console.log(doc.data().cycle);
-        setTimeleft(doc.data().timeleft);
+        const timeleft = ((doc.data().end - Date.now())/doc.data().cycleLength).toFixed(3)
+
+        // console.log(timeleft)
+
+        setTimeleft(timeleft);
         setUrl(doc.data().urlSmall);
         setTitle(doc.data().title);
       });

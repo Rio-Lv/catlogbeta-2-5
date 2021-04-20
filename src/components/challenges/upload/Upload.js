@@ -18,7 +18,7 @@ import firebase from "firebase";
 // upload={upload}
 // setSelected={props.setSelected}
 function Upload(props) {
-  //
+  //props Challenges js
   const [user, setUser] = useState(null);
   const [image, setImage] = useState(null);
   const [smallImage, setSmallImage] = useState(null);

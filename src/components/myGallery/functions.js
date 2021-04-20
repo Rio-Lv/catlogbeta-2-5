@@ -21,6 +21,18 @@ const getRGB = (timeleft) => {
   //   console.log({ T, R, G, B });
   return { R, G, B };
 };
+const getRGBcore = (timeleft) => {
+  // comes in percentage of week left eg. 0.1 = 10%
+  const T = timeleft;
+  // const R = 255 * (1 - T);
+  // const G = 255 * T;
+  // const B = 255 * (1 - Math.abs(0.5 - T));
+  const G = 255 * smoothIso(1, T, 0.5);
+  const B = 255 * smoothIso(0.5, T, 0.2);
+  const R = 255 * smoothIso(0, T, 0.5);
+  //   console.log({ T, R, G, B });
+  return { R, G, B };
+};
 const getTimeRemaining = (item) => {
   const timePercent = item.timeleft; //in percent of a cycle
   const seconds = timePercent * 604800; // seconds in a week
@@ -53,4 +65,4 @@ const getTimeRemaining = (item) => {
 
 
 
-export { getRGB, getTimeRemaining };
+export { getRGB, getTimeRemaining,getRGBcore };

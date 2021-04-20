@@ -73,14 +73,14 @@ function Challenges(props) {
             const title = doc.data().Title;
             const collectionPath = doc.data().CollectionPath;
             const cycle = doc.data().Cycle;
-            const timeleft =
-              (doc.data().End - Date.now()) /
-              (doc.data().End - doc.data().Start);
+            const end = doc.data().End
+            const cycleLength = doc.data().CycleLength
             setItem({
               title: title,
-              timeleft: timeleft,
+              end: end,
               collectionPath: collectionPath,
               cycle: cycle,
+              cycleLength :cycleLength
             });
           }
         });
