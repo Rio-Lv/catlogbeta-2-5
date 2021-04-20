@@ -1,8 +1,8 @@
 import { makeStyles } from "@material-ui/core/styles";
 
 const backgroundColor = "#1a1a1a";
-const hoverBackgroundColor = "#2b2b2b";
-const color = "#d4d4d4";
+const hoverBackgroundColor = "#111111";
+const color = "#ffe1c8";
 const hoverColor = "orange";
 
 const useStyles = makeStyles((theme) => ({
@@ -26,6 +26,7 @@ const useStyles = makeStyles((theme) => ({
   MenuItem: {
     color: `${color}`,
     "&:hover": {
+      backgroundColor: `${hoverBackgroundColor}`,
       color: `${hoverColor}`,
     },
   },

@@ -21,7 +21,7 @@ function Upload(props) {
   //
   const [user, setUser] = useState(null);
   const [image, setImage] = useState(null);
-  const [smallImage,setSmallImage] = useState(null);
+  const [smallImage, setSmallImage] = useState(null);
   const [acceptImage, setAcceptImage] = useState(false);
 
   useEffect(() => {
@@ -34,7 +34,13 @@ function Upload(props) {
       }
     });
   }, [user]);
-
+  //item here is as follows
+  //{
+  //   title: title,
+  //   timeleft: timeleft,
+  //   collectionPath: collectionPath,
+  //   cycle: cycle,
+  // }
   return (
     <div>
       <FadeIn>
@@ -45,7 +51,7 @@ function Upload(props) {
           setUpload={props.setUpload}
           upload={props.upload}
         ></TitleCard>
-        
+
         <UploadCard
           image={image}
           setImage={setImage}

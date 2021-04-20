@@ -19,7 +19,7 @@ exports.setCurrent = functions.pubsub
 
     db.collection("Sync")
       .doc("Constants")
-      .get()  
+      .get()
       .then((doc) => {
         if (doc.exists) {
           const CycleLength = doc.data().CycleLength;
@@ -42,17 +42,18 @@ exports.setCurrent = functions.pubsub
         }
       });
   });
-// Listen for any change on document `Sync/Constants` in collection `users`
+
 exports.updateChallenges = functions.firestore
   .document("Sync/Current")
   .onUpdate((change, context) => {
+    // Listen for any change on document `Sync/Constants` in collection `users`
     db.collection("Challenges")
       .doc(`Cycle_${change.after.data().Cycle}`)
       .set({
         Title: change.after.data().Title,
         Start: change.after.data().Start,
         End: change.after.data().End,
-        Cycle:change.after.data().Cycle,
+        Cycle: change.after.data().Cycle,
         CycleLength: change.after.data().End - change.after.data().Start,
         ReadableIssueTime: change.after.data().ReadableIssueTime,
         CollectionPath: change.after.data().CollectionPath,
@@ -63,6 +64,7 @@ exports.updateOpenToSubmit = functions.firestore
   .document("Sync/Current")
   .onUpdate((change, context) => {
     console.log("updating Challenges");
+
     db.collection("Sync")
       .doc("Constants")
       .get()
@@ -101,12 +103,43 @@ exports.updateOpenToVote = functions.firestore
             const Cycle = doc.data().Cycle;
             const OpenToVote = [];
             for (let i = 0; i < NumActive; i++) {
-              OpenToVote.push(`Challenges/Cycle_${Cycle - i- NumActive}`);
+              OpenToVote.push(`Challenges/Cycle_${Cycle - i - NumActive}`);
             }
             console.log(OpenToVote);
             db.collection("Sync")
               .doc("OpenToVote")
               .set({ OpenToVote: OpenToVote });
           });
+      });
+  });
+
+exports.updateChallengesCycleLength = functions.firestore
+  .document("Sync/Current")
+  .onUpdate((change, context) => {
+    // getting Open to vote doc, only these collection should have changing sizes
+    db.collection("Sync")
+      .doc("OpenToVote")
+      .get()
+      .then((doc) => {
+        if (doc.exists) {
+          const OpenToVote = doc.data().OpenToVote;
+          console.log(OpenToVote);
+          OpenToVote.forEach((challengePath) => {
+            console.log(challengePath);
+            db.doc(challengePath)
+              .get()
+              .then((doc) => {
+                const cycle = doc.data().Cycle;
+                console.log(cycle);
+                db.collection(`Submissions/AllSubmissions/${cycle}/`).get().then((snap) => {
+                  console.log(snap.size)
+
+                  db.doc(`Challenges/Cycle_${cycle}`).set({
+                    CollectionSize: snap.size||0
+                  },{merge:true});
+                });
+              });
+          });
+        }
       });
   });

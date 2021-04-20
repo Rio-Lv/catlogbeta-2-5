@@ -45,7 +45,7 @@ function SubmitCard(props) {
               props.item,
               props.setImage    
             );  
-            props.setSelected("home");
+            props.setSelected("My Gallery");
           }}
         >
           Click to Submit

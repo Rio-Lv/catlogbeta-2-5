@@ -21,7 +21,7 @@ function Backdrop(props) {
 
   const sizeImage = () => {
     if (window.innerWidth > 600) {
-      if (props.selected === "home") {
+      if (props.selected === "Home") {
         if (size !== window.innerWidth) {
           setSize(window.innerWidth);
           console.log("adjusting to width");
@@ -30,7 +30,7 @@ function Backdrop(props) {
           console.log("adjusting to Height");
         }
       } else {
-        props.setSelected("home");
+        props.setSelected("Home");
       }
     } else {
       setSize(window.innerHeight);
@@ -57,12 +57,17 @@ function Backdrop(props) {
   },[])
 
   useEffect(() => {
-    if (props.selected === "" || props.selected === "home") {
+    if (props.selected === "" || props.selected === "Home") {
       BGrmblur();
     } else {
       BGblur();
     }
   },[props.selected]);
+
+  useEffect(()=>{
+    BGrmblur()
+  },[props.user])
+
   useEffect(() => {
     if(window.innerWidth<600){
       setSize(window.innerHeight)
@@ -79,8 +84,8 @@ function Backdrop(props) {
       id="bgImage"
       onClick={() => {
         sizeImage();
-        props.setSelected("home")
-
+        props.setSelected("Home")
+        console.log("backdrop clicked")
       }}
       src={url}
       alt=""

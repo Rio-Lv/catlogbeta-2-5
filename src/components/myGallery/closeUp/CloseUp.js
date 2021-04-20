@@ -3,6 +3,52 @@ import { db } from "../../../firebase";
 import styled from "styled-components";
 import FadeIn from "react-fade-in";
 
+import Upload from "../../challenges/upload/Upload";
+
+const InfoBar = styled.div`
+  position: fixed;
+  width: 100%;
+  height: 35px;
+  opacity: 0;
+  transition: 0.7s;
+
+  /* border: 3px solid #111111; */
+`;
+const Title = styled.div`
+  background-color: #111111;
+  color: #ffe6d0;
+  text-align: center;
+  line-height: 28px;
+  position: fixed;
+  width: 400px;
+  height: 35px;
+  font-size: 24px;
+  transform: translate(-1px, -5px);
+  border-bottom-right-radius: 5px;
+  border-bottom-left-radius: 5px;
+  transition:0.7s ease;
+`;
+const Edit = styled.button`
+  transform: translate(1px, -5px);
+  background-color: #111111;
+  border: 0px solid #111111;
+  color: #c05d00;
+  text-align: center;
+  line-height: 28px;
+  position: fixed;
+  right: 0px;
+  width: 100px;
+  height: 35px;
+  font-size: 20px;
+  border-bottom-right-radius: 5px;
+  border-bottom-left-radius: 5px;
+  transition:0.7s ease;
+  &:hover{
+    background-color:#b34e1f;
+    color:white;
+  }
+`;
+
 const Box = styled.div`
   left: 50%;
   position: fixed;
@@ -27,7 +73,7 @@ const CenterBox = styled.div`
   position: fixed;
   align-items: center;
   justify-content: center;
-  width: 900px;
+  width: 850px;
   /* height:${window.innerHeight - 100}px; */
   left: 50%;
   transform: translate(-50%, -50%);
@@ -48,16 +94,19 @@ const ImageBox = styled.div`
   padding-top: 100%;
   width: 100%;
   /* box-shadow:1px 1px 3px 2px; */
-  border: 1px solid #ffffff;
-  border-radius: 5px;
+  border: 1px solid #000000;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
   background-repeat: no-repeat;
   background-size: contain;
-  transition: 0.3s ease;
+  transition: 0.5s ease;
 `;
 
 function CloseUP(props) {
   //props from grid
   const [url, setUrl] = useState("");
+  const [title, setTitle] = useState("");
+  const [hover, setHover] = useState(false);
   useEffect(() => {
     if (props.reference !== "") {
       db.doc(props.reference)
@@ -67,6 +116,7 @@ function CloseUP(props) {
             console.log("document in CloseUp");
             console.log(doc.data());
             setUrl(doc.data().url);
+            setTitle(doc.data().title);
           } else {
             console.log("doc not found in close UP");
           }
@@ -75,19 +125,56 @@ function CloseUP(props) {
   }, [props.reference]);
   return (
     <div>
-      <Box />
-      <CenterBox>
-        <FadeIn>
-          <ImageBox
-            style={{
-              backgroundImage: `url(${url})`,
-            }}
-            onClick={() => {
-              props.setReference("");
-            }}
-          ></ImageBox>
-        </FadeIn>
-      </CenterBox>
+      <div>
+        <Box />
+        <CenterBox
+          onMouseEnter={() => {
+            setHover(true);
+          }}
+          onMouseLeave={() => {
+            setHover(false);
+          }}
+        >
+          <FadeIn>
+            <ImageBox
+              style={{
+                backgroundImage: `url(${url})`,
+                borderTopLeftRadius: hover ? "5px" : "10px",
+                borderTopRightRadius: hover ? "5px" : "10px",
+                borderBottomLeftRadius: hover ? "0px" : "10px",
+                borderBottomRightRadius: hover ? "0px" : "10px",
+              }}
+              onClick={() => {
+                props.setReference("");
+              }}
+            ></ImageBox>
+          </FadeIn>
+
+          <InfoBar style={{ opacity: hover ? "1" : "0" }}>
+            <Title
+              style={{
+                borderTopLeftRadius: hover ? "0px" : "5px",
+                borderTopRightRadius: hover ? "0px" : "5px",
+                transform: hover ? "translate(-1px,-5px)" : "translate(-1px,3px)"
+              }}
+            >
+              {title}
+            </Title>
+            <Edit
+              onClick={() => {
+                props.setReference("");
+              }}
+              style={{
+                borderTopLeftRadius: hover ? "0px" : "5px",
+                borderTopRightRadius: hover ? "0px" : "5px",
+                transform: hover ? "translate(1px,-5px)" : "translate(1px,3px)"
+              }}
+            >
+              Back
+            </Edit>
+          </InfoBar>
+        </CenterBox>
+      </div>
     </div>
   );
 }

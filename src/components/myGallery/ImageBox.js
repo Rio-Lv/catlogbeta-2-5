@@ -9,7 +9,7 @@ const Box = styled.div`
   width: ${imageWidth}px;
   height: ${imageWidth + 44}px;
   margin: ${pad}px;
-  border-radius: 13px;
+  border-radius: 8px;
   background-repeat: no-repeat;
   background-size: cover;
   transition: 0.5s ease;
@@ -32,8 +32,8 @@ const Text = styled.div`
   font-size: 30px;
   text-align: center;
   line-height: 40px;
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
   transition: 0.3s ease;
 `;
 
@@ -44,18 +44,18 @@ function ImageBox(props) {
   const [title, setTitle] = useState("");
   const [timeleft, setTimeleft] = useState(0);
 
-  const [base, setBase] = useState(0);
+  const [base, setBase] = useState(50);
   const [W, setW] = useState(1);
 
   const [color, setColor] = useState("#ffd6a0");
   const [borderColor, setBorderColor] = useState("#000000");
   
-  const { R, G, B } = getRGB(timeleft);
+  const { R, G, B } = getRGB(timeleft*.85);// for some reason, offsetting the time left fixes the color sync with challenges
 
   useEffect(() => {
     // console.log(props.reference)
     try {
-      db.doc(props.reference).get().then((doc) => {
+      db.doc(props.reference).onSnapshot((doc) => {
         // console.log("displaying from submissions Sub Image box");
         // console.log(doc.data().cycle);
         setTimeleft(doc.data().timeleft);
@@ -73,13 +73,13 @@ function ImageBox(props) {
         setBorderColor("#ff8800");
         setColor("#ff8800");
         setBase(0);
-        setW(1.2);
+        setW(1.5);
       }}
       onMouseLeave={() => {
         setBorderColor("#000000");
         setColor("#ffd6a0");
-        setBase(120);
-        setW(0.5);
+        setBase(50);
+        setW(0.7);
       }}
       onClick = {()=>{
         console.log('imageBox clicked')
@@ -93,8 +93,8 @@ function ImageBox(props) {
           style={{
             position: "fixed",
             width: `${imageWidth}px`,
-            borderTopRightRadius: "10px",
-            borderTopLeftRadius: "10px",
+            borderTopRightRadius: "5px",
+            borderTopLeftRadius: "5px",
           }}
           src={url}
           alt=""

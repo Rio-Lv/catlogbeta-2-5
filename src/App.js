@@ -14,16 +14,16 @@ function App() {
   // authentification
   const [user, setUser] = useState(null);
   const [display, setDisplay] = useState(null);
-  const [selected, setSelected] = useState("home");
+  const [selected, setSelected] = useState("Home");
 
   const menuItems = [
     {
-      name: "home",
+      name: "Home",
       component: <Home setSelected={setSelected} />,
       type: "public",
     },
     {
-      name: "gallery",
+      name: "Gallery",
       component: <Gallery setSelected={setSelected} />,
       type: "public",
     },
@@ -52,12 +52,14 @@ function App() {
         if (user) {
           console.log("from authStateChange in app.js");
           console.log(user.uid);
+          
         }
       } else {
         console.log("auth function no response");
         setUser(null);
       }
     });
+    setSelected("Home")
   }, [user]);
 
   // component selection
@@ -73,14 +75,13 @@ function App() {
   return (
     <div className="App">
       <Backdrop
+        user={user}
         setSelected={setSelected}
         selected={selected}
-        onClick={() => {
-          setSelected("home");
-        }}
+
       />
       <MainMenu setSelected={setSelected} menuItems={menuItems} user={user} />
-      <Login setSelected={setSelected} />
+      <Login setSelected={setSelected} selected={selected} />
 
       {display}
     </div>

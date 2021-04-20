@@ -23,7 +23,7 @@ function Login(props) {
         if (user) {
           console.log("from authStateChange in app.js");
           console.log(user.uid);     
-          props.setSelected("home")
+          props.setSelected("Home")
         }
       } else {
         console.log("auth function no response");    
@@ -56,6 +56,14 @@ function Login(props) {
       });
   };
 
+  useEffect(()=>{
+    if(props.selected === "login"){
+      setOpen(true);
+    }else{
+      setOpen(false);
+    }
+  },[props.selected])
+
   return (
     <div>
       {user ? (
@@ -83,7 +91,7 @@ function Login(props) {
                   className={classes.loginButton}
                   onClick={() => {
                     setOpen(true);
-                    props.setSelected('login')
+                    props.setSelected('Login')
                   }}
                 >
                   Login

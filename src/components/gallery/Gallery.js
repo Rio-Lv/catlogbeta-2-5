@@ -30,7 +30,7 @@ function Gallery(props) {
         const CycleLength = doc.data().CycleLength;
         const DurationLength = doc.data().DurationLength;
         const StartDate = doc.data().StartDate;
-        const CurrentCycle = Math.floor((now - StartDate) / CycleLength)-0;
+        const CurrentCycle = Math.floor((now - StartDate) / CycleLength) - 0;
 
         db.collection("Sync")
           .doc("Current")
@@ -58,7 +58,7 @@ function Gallery(props) {
             Title: doc.data().Title,
             Start: doc.data().Start,
             End: doc.data().End,
-            Cycle:doc.data().Cycle,
+            Cycle: doc.data().Cycle,
             CycleLength: doc.data().End - doc.data().Start,
             ReadableIssueTime: doc.data().ReadableIssueTime,
             CollectionPath: doc.data().CollectionPath,
@@ -88,8 +88,6 @@ function Gallery(props) {
               .set({ OpenToSubmit: OpenToSubmit });
           });
       });
-
-      
   };
   const updateOpenToVote = () => {
     db.collection("Sync")
@@ -105,7 +103,7 @@ function Gallery(props) {
             const Cycle = doc.data().Cycle;
             const OpenToVote = [];
             for (let i = 0; i < NumActive; i++) {
-              OpenToVote.push(`Challenges/Cycle_${Cycle - i-NumActive}`);
+              OpenToVote.push(`Challenges/Cycle_${Cycle - i - NumActive}`);
             }
             console.log(OpenToVote);
             db.collection("Sync")
@@ -113,20 +111,119 @@ function Gallery(props) {
               .set({ OpenToVote: OpenToVote });
           });
       });
-    };
+  };
+  const updateChallengesCycleLength = () => {
+    db.collection("Sync")
+      .doc("OpenToVote")
+      .get()
+      .then((doc) => {
+        if (doc.exists) {
+          const OpenToVote = doc.data().OpenToVote;
+          console.log(OpenToVote);
+          OpenToVote.forEach((challengePath) => {
+            console.log(challengePath);
+            db.doc(challengePath)
+              .get()
+              .then((doc) => {
+                const cycle = doc.data().Cycle;
+                console.log(cycle);
+                db.collection(`Submissions/AllSubmissions/${cycle}/`)
+                  .get()
+                  .then((snap) => {
+                    console.log(snap.size);
+
+                    db.doc(`Challenges/Cycle_${cycle}`).set(
+                      {
+                        CollectionSize: snap.size || 0,
+                      },
+                      { merge: true }
+                    );
+                  });
+              });
+          });
+        }
+      });
+  };
+
+  const fixChallenge = (cycle) => {
+    const random = randomPictionaryWords({
+      exactly: 2,
+      wordsPerString: 1,
+      join: " ",
+    });
+    db.doc(`Challenges/Cycle_${cycle}`).set({
+      Cycle: cycle,
+      Title: random,
+      End: 1617908395421,
+      Start: 1617821995421,
+      ReadableIssueTime: "Wed Apr 07 2021",
+      CycleLength: 86400000,
+    });
+  };
+
+  const updateVotingList = () => {
+    console.log("running update Voting list");
+    db.doc("Sync/OpenToVote")
+      .get()
+      .then((doc) => {
+        if (doc.exists) {
+          // console.log(doc.data().OpenToVote)
+          doc.data().OpenToVote.forEach((path) => {
+            db.doc(path)
+              .get()
+              .then((doc) => {
+                const cycle = doc.data().Cycle;
+
+                db.collection(`/Submissions/AllSubmissions/${cycle}`)
+                  .get()
+                  .then((collection) => {
+                    const array = [];
+                    collection.forEach((doc) => {
+                      array.push(doc.id);
+                    });
+                    db.doc(`VotingList/List_${cycle}`).set(
+                      {
+                        List: array,
+                      },
+                      { merge: true }
+                    );
+                  });
+              });
+          });
+        }
+      });
+  };
+
   return (
     <div>
       <button
         style={{ position: "fixed", left: "30%" }}
-        onClick={updateCurrent}
+        onClick={() => {
+          updateVotingList();
+        }}
       >
-        Update Current
+        update Voting List
       </button>
-      <button style={{ position: "fixed", left: "50%" }} onClick={updateOpenToVote}>
+      <button
+        style={{ position: "fixed", left: "50%" }}
+        onClick={updateOpenToVote}
+      >
         Update OpenToVote
       </button>
-      <button style={{ position: "fixed", left: "80%" }} onClick={updateChallenges}>
+      <button
+        style={{ position: "fixed", left: "80%" }}
+        onClick={updateChallenges}
+      >
         Update Challenges
+      </button>
+      <button
+        style={{ position: "fixed", left: "70%" }}
+        onClick={()=>{
+           updateChallengesCycleLength();
+
+          fixChallenge(94)}}
+      >
+        fix Challenge
       </button>
       Gallery
     </div>
