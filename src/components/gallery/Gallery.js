@@ -103,7 +103,7 @@ function Gallery(props) {
             const Cycle = doc.data().Cycle;
             const OpenToVote = [];
             for (let i = 0; i < NumActive; i++) {
-              OpenToVote.push(`Challenges/Cycle_${Cycle - i - NumActive}`);
+              OpenToVote.push(`${Cycle - i - NumActive}`);
             }
             console.log(OpenToVote);
             db.collection("Sync")
@@ -168,8 +168,23 @@ function Gallery(props) {
       .then((doc) => {
         if (doc.exists) {
           // console.log(doc.data().OpenToVote)
-          doc.data().OpenToVote.forEach((path) => {
-            db.doc(path)
+          //clear old
+          db.collection("VotingList").onSnapshot((snapshot)=>{
+            console.log(doc.data().OpenToVote)
+            snapshot.forEach(cycle=>{
+              console.log(cycle.id)
+              if(doc.data().OpenToVote.includes(cycle.id)){
+                console.log("Open to Vote")
+              }else{
+                console.log("expired submission, now deleting from Voting List")
+                db.doc(`VotingList/${cycle.id}`).delete()
+              }
+            })
+          })
+          
+
+          doc.data().OpenToVote.forEach((Cycle) => {
+            db.doc(`Challenges/Cycle_${Cycle}`)
               .get()
               .then((doc) => {
                 const cycle = doc.data().Cycle;
@@ -181,7 +196,7 @@ function Gallery(props) {
                     collection.forEach((doc) => {
                       array.push(doc.id);
                     });
-                    db.doc(`VotingList/List_${cycle}`).set(
+                    db.doc(`VotingList/${cycle}`).set(
                       {
                         List: array,
                       },

@@ -4,7 +4,7 @@ const useStyles = makeStyles((theme) => ({
         position:'relative',
         fontWeight: "600",
         backgroundColor: "#1a1a1a",
-        color: "#ffe1c8",
+        color: "#fff6ee",
         paddingTop: "8px",
         paddingBottom:"8px",
         lineHeight: "16px",

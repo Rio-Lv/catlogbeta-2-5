@@ -17,7 +17,7 @@ const Image = Styled.img`
 function Backdrop(props) {
   const [size, setSize] = useState(window.innerWidth);
 
-  const url = "https://w.wallhaven.cc/full/vg/wallhaven-vg67m3.png";
+  const url = "https://c.wallhere.com/photos/5e/6c/1500x1500_px_3d_beeple_couple_digital_art_ImagineDragons_neon_Ravine-1519951.jpg!d";
 
   const sizeImage = () => {
     if (window.innerWidth > 600) {

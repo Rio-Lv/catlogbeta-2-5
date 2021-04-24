@@ -1,60 +1,73 @@
-import { ContactlessOutlined } from "@material-ui/icons";
 import React, { useState, useEffect } from "react";
-
+import VoteBox from "./VoteBox";
 import { db } from "../../firebase";
+const random = (num) => {
+  return Math.floor(Math.random() * num);
+};
 
 function Vote() {
-  const [voteCycles, setVoteCycles] = useState([]);
-  const [random, setRandom] = useState(0);
+  const [Cycle, setCycle] = useState(null);
+  const [docNameLeft, setDocNameLeft] = useState("");
+  const [docNameRight, setDocNameRight] = useState("");
+  const [leftItem, setLeftItem] = useState(null);
+  const [rightItem, setRightItem] = useState(null);
+  const [OpenToVote,setOpenToVote] = useState([]);
 
-  // get the cycles that are in the voting loop currently
-  // voteCycles array looks like [102,103,104,... etc]
-  useEffect(() => {
-    db.collection("Sync")
-      .doc("OpenToVote")
-      .onSnapshot((doc) => {
+  useEffect(()=>{
+    db.doc("Sync/OpenToVote").onSnapshot((doc) => {
+      console.log('docRead')
+      setOpenToVote(doc.data().OpenToVote);
+    })
+  },[])
+
+  const shuffle = () =>{
+    db.doc("Sync/OpenToVote").onSnapshot((doc) => {
+      console.log('docRead')
+      const OpenToVote = doc.data().OpenToVote;
+      // console.log("open to vote " + OpenToVote);
+      const cycle = OpenToVote[random(OpenToVote.length)];
+      setCycle(cycle);
+
+      db.doc(`VotingList/${cycle}`).onSnapshot((doc) => {
+        console.log('docRead')
         if (doc.exists) {
-          const challengesPaths = doc.data().OpenToVote;
-          // console.log(challengesPaths);
-          const random = () => {
-            return Math.floor(Math.random() * challengesPaths.length);
-          };
-
-          db.doc(challengesPaths[random()])
-            .get()
-            .then((doc) => {
-              // console.log(doc.data().Cycle);
-              const randomCollection = db.collection(
-                `Submissions/AllSubmissions/${doc.data().Cycle}`
-              );
-              randomCollection.onSnapshot((snap) => {
-                // get the collection and then randomize it
-               snap.forEach(doc=>{
-                 console.log(doc.id)
-               })
-                
-               
-                // snap.forEach((doc) => {
-                //   console.log(doc.data());
-                // });
-              });
-            });
+          // console.log("data from Voting list cycle :" + cycle);
+          // console.log(doc.data().List);
+          const listSize = doc.data().List.length;
+          // console.log("list size is : " + listSize);
+          if (listSize > 0) {
+            setDocNameLeft(doc.data().List[random(listSize)]);
+            setDocNameRight(doc.data().List[random(listSize)]);
+            // console.log(
+            //   "setting doc names to the react hooks on Vote component load"
+            // );
+          } else {
+            console.log("list size too small");
+          }
         }
       });
-  }, [random]);
+    });
+  }
 
-  useEffect(() => {}, [voteCycles]);
+  useEffect(() => {
+   shuffle();
+  }, []);
+
+  //run a function on change to the randomized doc names
+  useEffect(() => {
+    // console.log("Cycle " + Cycle);
+    // console.log("docNameLeft " + docNameLeft);
+    // console.log("docNameRight " + docNameRight);
+  }, [docNameLeft, docNameRight, Cycle]);
+
   return (
     <div>
-      <h1>Vote</h1>
-      <button
-        style={{ position: "fixed" }}
-        onClick={() => {
-          console.log(voteCycles);
-        }}
-      >
-        dsafdasfdsf
-      </button>
+
+      <VoteBox
+        left={docNameLeft!==""?`Submissions/AllSubmissions/${Cycle}/${docNameLeft}`:""}
+        right={docNameRight!==""?`Submissions/AllSubmissions/${Cycle}/${docNameRight}`:""}
+        shuffle ={shuffle}
+      ></VoteBox>
     </div>
   );
 }

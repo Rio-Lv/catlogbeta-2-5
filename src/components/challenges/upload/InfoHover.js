@@ -18,13 +18,12 @@ function InfoHover() {
         <FadeIn>
           <div style={{marginBottom:marginBottom}}>
             <p1>
-              Images should be a perfect square within 1500px to 3500px length
+              Dimension MINIMUM: 1500px and a MAXIMUM: 4500px.
             </p1>
           </div >
           <div style={{marginBottom:marginBottom}}>
             <p1>
-              If the images arent squares they will be resized(not cropped) into
-              squares, ps... please do your own crop, its hard to code it in :(
+              Please Submit a Square Image, The image will auto resized to a Square if not
             </p1>
           </div>
           <div style={{marginBottom:marginBottom}}>
@@ -34,7 +33,7 @@ function InfoHover() {
           </div>
           <div style={{marginBottom:marginBottom}}>
             <p1>
-              I encourage you to leave your signature on your work! 
+              I encourage you to leave your signature on your work! You deserve the praise! :)
             </p1>
           </div>
         </FadeIn>

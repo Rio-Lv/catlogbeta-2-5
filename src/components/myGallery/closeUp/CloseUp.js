@@ -16,7 +16,8 @@ const InfoBar = styled.div`
 `;
 const Title = styled.div`
   background-color: #111111;
-  color: #ffe6d0;
+  color: "#fff6ee";
+  
   text-align: center;
   line-height: 28px;
   position: fixed;
@@ -153,6 +154,7 @@ function CloseUP(props) {
           <InfoBar style={{ opacity: hover ? "1" : "0" }}>
             <Title
               style={{
+                color:"#fff6ee",
                 borderTopLeftRadius: hover ? "0px" : "5px",
                 borderTopRightRadius: hover ? "0px" : "5px",
                 transform: hover ? "translate(-1px,-5px)" : "translate(-1px,3px)"

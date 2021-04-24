@@ -66,8 +66,7 @@ function Challenges(props) {
     } else {
       console.log("setting upload to true");
       db.doc(reference)
-        .get()
-        .then((doc) => {
+        .onSnapshot((doc) => {
           if (doc.exists) {
             // console.log(doc.data());
             const title = doc.data().Title;

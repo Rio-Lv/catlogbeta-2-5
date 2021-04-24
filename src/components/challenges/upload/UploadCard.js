@@ -21,7 +21,7 @@ function UploadCard(props) {
   const onDrop = useCallback((files) => {
     const smallDim = 500;
     const minDim = 1500;
-    const maxDim = 3500;
+    const maxDim = 4500;
     var _URL = window.URL || window.webkitURL;
     if (files[0]) {
       console.log("drop input:====>");
