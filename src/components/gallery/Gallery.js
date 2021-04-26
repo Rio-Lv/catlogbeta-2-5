@@ -120,25 +120,20 @@ function Gallery(props) {
         if (doc.exists) {
           const OpenToVote = doc.data().OpenToVote;
           console.log(OpenToVote);
-          OpenToVote.forEach((challengePath) => {
-            console.log(challengePath);
-            db.doc(challengePath)
-              .get()
-              .then((doc) => {
-                const cycle = doc.data().Cycle;
-                console.log(cycle);
-                db.collection(`Submissions/AllSubmissions/${cycle}/`)
-                  .get()
-                  .then((snap) => {
-                    console.log(snap.size);
+          OpenToVote.forEach((cycle) => {
+            console.log(cycle);
 
-                    db.doc(`Challenges/Cycle_${cycle}`).set(
-                      {
-                        CollectionSize: snap.size || 0,
-                      },
-                      { merge: true }
-                    );
-                  });
+            db.collection(`Submissions/AllSubmissions/${cycle}/`)
+              .get()
+              .then((snap) => {
+                console.log(snap.size);
+
+                db.doc(`Challenges/Cycle_${cycle}`).set(
+                  {
+                    CollectionSize: snap.size || 0,
+                  },
+                  { merge: true }
+                );
               });
           });
         }
@@ -169,25 +164,11 @@ function Gallery(props) {
         if (doc.exists) {
           // console.log(doc.data().OpenToVote)
           //clear old
-          db.collection("VotingList").onSnapshot((snapshot)=>{
-            console.log(doc.data().OpenToVote)
-            snapshot.forEach(cycle=>{
-              console.log(cycle.id)
-              if(doc.data().OpenToVote.includes(cycle.id)){
-                console.log("Open to Vote")
-              }else{
-                console.log("expired submission, now deleting from Voting List")
-                db.doc(`VotingList/${cycle.id}`).delete()
-              }
-            })
-          })
-          
-
           doc.data().OpenToVote.forEach((Cycle) => {
             db.doc(`Challenges/Cycle_${Cycle}`)
               .get()
-              .then((doc) => {
-                const cycle = doc.data().Cycle;
+              .then((challenge) => {
+                const cycle = challenge.data().Cycle;
 
                 db.collection(`/Submissions/AllSubmissions/${cycle}`)
                   .get()
@@ -202,12 +183,56 @@ function Gallery(props) {
                       },
                       { merge: true }
                     );
+                    db.collection("VotingList")
+                      .get()
+                      .then((snapshot) => {
+                        console.log(doc.data().OpenToVote);
+                        snapshot.forEach((cycle) => {
+                          console.log(cycle.id);
+                          if (doc.data().OpenToVote.includes(cycle.id)) {
+                            console.log("Open to Vote");
+                          } else {
+                            console.log(
+                              "expired submission, now deleting from Voting List"
+                            );
+                            db.doc(`VotingList/${cycle.id}`).delete();
+                          }
+                        });
+                      });
                   });
               });
           });
         }
       });
   };
+
+  const createSubmissions = (docID, cycle) => {
+    const url =
+      "https://lh3.googleusercontent.com/proxy/O1UDmcofZeNcKChJSscmbrWDtERatnkMCA3Crg7dkVRNG540jIR6mYnepKzBrDV5M-HXuhc8ktJYRWsWSSg-a5cQO2f3YzSvnkGjPXtszm06DtmF_jfIs8LQ-2E4qLaQ=w1200-h630-p-k-no-nu";
+
+    db.doc(`Submissions/AllSubmissions/${cycle}/${docID}`).set({
+      cycle: cycle,
+      displayName: "TestName",
+      losses: 0,
+      timeleft: 0,
+      title: "TestTitle",
+      url: url,
+      urlSmall: url,
+      user: docID,
+      winrate: 0.5,
+      wins: 0,
+    });
+    db.doc(`VotingList/${cycle}`)
+      .get()
+      .then((doc) => {
+        if (doc.exists) {
+          const array = [...doc.data().List, docID];
+          db.doc(`VotingList/${cycle}`).set({ List: array });
+        }
+      });
+  };
+
+  const cyc = 107;
 
   return (
     <div>
@@ -232,13 +257,24 @@ function Gallery(props) {
         Update Challenges
       </button>
       <button
-        style={{ position: "fixed", left: "70%" }}
-        onClick={()=>{
-           updateChallengesCycleLength();
-
-          fixChallenge(94)}}
+        style={{ position: "fixed", left: "40%", top: "30%" }}
+        onClick={() => {
+          updateChallengesCycleLength();
+        }}
       >
-        fix Challenge
+        updateChallengesCycleLength
+      </button>
+      <button
+        style={{ position: "fixed", left: "70%", top: "200px" }}
+        onClick={() => {
+          createSubmissions(
+            `test_id_${Math.floor(Math.random() * 10000)}`,
+            cyc
+          );
+          console.log(`creating test sumbission for Cycle ${cyc}`);
+        }}
+      >
+        create submission {cyc}
       </button>
       Gallery
     </div>

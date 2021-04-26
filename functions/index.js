@@ -118,83 +118,75 @@ exports.updateChallengesCycleLength = functions.firestore
   .onUpdate((change, context) => {
     // getting Open to vote doc, only these collection should have changing sizes
     db.collection("Sync")
-      .doc("OpenToVote")
-      .get()
-      .then((doc) => {
-        if (doc.exists) {
-          const OpenToVote = doc.data().OpenToVote;
-          console.log(OpenToVote);
-          OpenToVote.forEach((challengePath) => {
-            console.log(challengePath);
-            db.doc(challengePath)
-              .get()
-              .then((doc) => {
-                const cycle = doc.data().Cycle;
-                console.log(cycle);
-                db.collection(`Submissions/AllSubmissions/${cycle}/`)
-                  .get()
-                  .then((snap) => {
-                    console.log(snap.size);
+    .doc("OpenToVote")
+    .get()
+    .then((doc) => {
+      if (doc.exists) {
+        const OpenToVote = doc.data().OpenToVote;
+        console.log(OpenToVote);
+        OpenToVote.forEach((cycle) => {
+          console.log(cycle);
 
-                    db.doc(`Challenges/Cycle_${cycle}`).set(
-                      {
-                        CollectionSize: snap.size || 0,
-                      },
-                      { merge: true }
-                    );
-                  });
-              });
-          });
-        }
-      });
+          db.collection(`Submissions/AllSubmissions/${cycle}/`)
+            .get()
+            .then((snap) => {
+              console.log(snap.size);
+
+              db.doc(`Challenges/Cycle_${cycle}`).set(
+                {
+                  CollectionSize: snap.size || 0,
+                },
+                { merge: true }
+              );
+            });
+        });
+      }
+    });
   });
 
 exports.updateVotingList = functions.firestore
-  .document("Sync/Current")
-  .onUpdate((change, context) => {
-    console.log("running update Voting list");
+  .document("Sync/OpenToVote")
+  .onWrite((change, context) => {
     db.doc("Sync/OpenToVote")
-      .get()
-      .then((doc) => {
-        if (doc.exists) {
-          // console.log(doc.data().OpenToVote)
-          //clear old
-          db.collection("VotingList").onSnapshot((snapshot) => {
-            console.log(doc.data().OpenToVote);
-            snapshot.forEach((cycle) => {
-              console.log(cycle.id);
-              if (doc.data().OpenToVote.includes(cycle.id)) {
-                console.log("Open to Vote");
-              } else {
-                console.log(
-                  "expired submission, now deleting from Voting List"
-                );
-                db.doc(`VotingList/${cycle.id}`).delete();
-              }
-            });
-          });
-          doc.data().OpenToVote.forEach((Cycle) => {
-            db.doc(`Challenges/Cycle_${Cycle}`)
-              .get()
-              .then((doc) => {
-                const cycle = doc.data().Cycle;
+    .get()
+    .then((doc) => {
+      if (doc.exists) {
+        // console.log(doc.data().OpenToVote)
+        //clear old
+        doc.data().OpenToVote.forEach((Cycle) => {
+          db.doc(`Challenges/Cycle_${Cycle}`)
+            .get()
+            .then((challenge) => {
+              const cycle = challenge.data().Cycle;
 
-                db.collection(`/Submissions/AllSubmissions/${cycle}`)
-                  .get()
-                  .then((collection) => {
-                    const array = [];
-                    collection.forEach((doc) => {
-                      array.push(doc.id);
-                    });
-                    db.doc(`VotingList/${cycle}`).set(
-                      {
-                        List: array,
-                      },
-                      { merge: true }
-                    );
+              db.collection(`/Submissions/AllSubmissions/${cycle}`)
+                .get()
+                .then((collection) => {
+                  const array = [];
+                  collection.forEach((doc) => {
+                    array.push(doc.id);
                   });
-              });
-          });
-        }
-      });
+                  db.doc(`VotingList/${cycle}`).set(
+                    {
+                      List: array,
+                    },
+                    { merge: true }
+                  );
+                  db.collection("VotingList").get().then((snapshot)=>{
+                    console.log(doc.data().OpenToVote)
+                    snapshot.forEach(cycle=>{
+                      console.log(cycle.id)
+                      if(doc.data().OpenToVote.includes(cycle.id)){
+                        console.log("Open to Vote")
+                      }else{
+                        console.log("expired submission, now deleting from Voting List")
+                        db.doc(`VotingList/${cycle.id}`).delete()
+                      }
+                    })
+                  })
+                });
+            });
+        });
+      }
+    });
   });

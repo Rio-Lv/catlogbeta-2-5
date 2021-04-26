@@ -11,48 +11,74 @@ function Vote() {
   const [docNameRight, setDocNameRight] = useState("");
   const [leftItem, setLeftItem] = useState(null);
   const [rightItem, setRightItem] = useState(null);
-  const [OpenToVote,setOpenToVote] = useState([]);
+  const [OpenToVote, setOpenToVote] = useState(null);
+  const [docReads, setDocReads] = useState(0);
 
-  useEffect(()=>{
+
+  const increaseDocRead = () => {
+    setDocReads(docReads + 1);
+  };
+
+  useEffect(() => {
     db.doc("Sync/OpenToVote").onSnapshot((doc) => {
-      console.log('docRead')
+      increaseDocRead();
+      // console.log(doc.data().OpenToVote);
       setOpenToVote(doc.data().OpenToVote);
-    })
-  },[])
+    });
+  }, []);
 
-  const shuffle = () =>{
-    db.doc("Sync/OpenToVote").onSnapshot((doc) => {
-      console.log('docRead')
-      const OpenToVote = doc.data().OpenToVote;
-      // console.log("open to vote " + OpenToVote);
-      const cycle = OpenToVote[random(OpenToVote.length)];
+  const shuffle = () => {
+    // console.log("open to vote " + OpenToVote);
+
+    if (OpenToVote !== null) {
+      console.log("shuffling")
+      var cycle = OpenToVote[random(OpenToVote.length)];
+      console.log(cycle)
+      if(cycle===Cycle){
+        cycle = OpenToVote[random(OpenToVote.length)]
+      }
       setCycle(cycle);
 
       db.doc(`VotingList/${cycle}`).onSnapshot((doc) => {
-        console.log('docRead')
+        // console.log("docRead");
+        increaseDocRead();
         if (doc.exists) {
           // console.log("data from Voting list cycle :" + cycle);
           // console.log(doc.data().List);
           const listSize = doc.data().List.length;
-          // console.log("list size is : " + listSize);
-          if (listSize > 0) {
-            setDocNameLeft(doc.data().List[random(listSize)]);
-            setDocNameRight(doc.data().List[random(listSize)]);
+          console.log("list size is : " + listSize);
+          if (listSize > 1) {
+            const random1 = random(listSize)
+            var random2 = random(listSize)
+            while(random1===random2){
+              random2 =random(listSize)
+            }
+            if(random1!==random2){
+              setDocNameLeft(doc.data().List[random1]);
+              setDocNameRight(doc.data().List[random2]);
+            }
+            
             // console.log(
             //   "setting doc names to the react hooks on Vote component load"
             // );
           } else {
             console.log("list size too small");
+            cycle = OpenToVote[random(OpenToVote.length)]
           }
         }
       });
-    });
-  }
+    }
+
+  };
 
   useEffect(() => {
-   shuffle();
-  }, []);
+    // console.log(OpenToVote);
+    shuffle();
+  }, [OpenToVote]);
 
+  useEffect(() => {
+    // console.log("docReads: "+docReads);
+  }, [docReads]);
   //run a function on change to the randomized doc names
   useEffect(() => {
     // console.log("Cycle " + Cycle);
@@ -62,11 +88,19 @@ function Vote() {
 
   return (
     <div>
-
       <VoteBox
-        left={docNameLeft!==""?`Submissions/AllSubmissions/${Cycle}/${docNameLeft}`:""}
-        right={docNameRight!==""?`Submissions/AllSubmissions/${Cycle}/${docNameRight}`:""}
-        shuffle ={shuffle}
+        LeftPath={
+          docNameLeft !== ""
+            ? `Submissions/AllSubmissions/${Cycle}/${docNameLeft}`
+            : ""
+        }
+        RightPath={
+          docNameRight !== ""
+            ? `Submissions/AllSubmissions/${Cycle}/${docNameRight}`
+            : ""
+        }
+        shuffle={shuffle}
+        increaseDocRead = {increaseDocRead}
       ></VoteBox>
     </div>
   );
