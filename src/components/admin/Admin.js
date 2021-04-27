@@ -330,6 +330,24 @@ function Admin(props) {
       });
   };
 
+  const calculateWinrate = (cycle) =>{
+    db.collection(`/Submissions/AllSubmissions/${cycle}`).get().then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+          //doc.data() is never undefined for query doc snapshots
+          const docRef = db.doc(`/Submissions/AllSubmissions/${cycle}/${doc.data().user}`);
+          docRef.get().then(submission=>{
+            const wins = submission.data().wins;
+            const losses = submission.data().losses;
+            const winrate = wins/(wins+losses)||0.5
+            console.log(winrate);
+            docRef.set({
+              winrate:winrate
+            },{merge:true})
+          })
+      });
+  });
+  }
+
   return (
     <div
       style={{
@@ -341,6 +359,7 @@ function Admin(props) {
         transform: "translate(-50%,-50%)",
       }}
     >
+      <Button onClick={()=>{calculateWinrate(106)}}>calculateWinrate</Button>
       <Button onClick={autoGenerateSubmissions}>autoGenerateSubmissions</Button>
       <Button onClick={uploadTemplateCats}>uploadTemplateCats</Button>
       <Button onClick={updateVotingList}>update Voting List</Button>

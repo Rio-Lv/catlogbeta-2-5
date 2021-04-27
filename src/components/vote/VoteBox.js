@@ -73,8 +73,8 @@ const Title = styled.div`
   transition: 0.5s ease;
   position: relative;
   width: 100%;
-  height: 40px;
-  font-size: 28px;
+  height: 35px;
+  font-size: 24px;
   color: white;
   text-align: center;
   &:hover {

@@ -45,6 +45,7 @@ function Vote() {
       db.doc(`VotingList/${cycle}`).onSnapshot((doc) => {
         // console.log("docRead");
         increaseDocRead();
+        
         if (doc.exists) {
           // console.log("data from Voting list cycle :" + cycle);
           // console.log(doc.data().List);
@@ -59,6 +60,7 @@ function Vote() {
             if(random1!==random2){
               setDocNameLeft(doc.data().List[random1]);
               setDocNameRight(doc.data().List[random2]);
+              
             }
 
           } else {
