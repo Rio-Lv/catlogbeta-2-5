@@ -9,10 +9,10 @@ function Vote() {
   const [Cycle, setCycle] = useState(null);
   const [docNameLeft, setDocNameLeft] = useState("");
   const [docNameRight, setDocNameRight] = useState("");
-  const [leftItem, setLeftItem] = useState(null);
-  const [rightItem, setRightItem] = useState(null);
   const [OpenToVote, setOpenToVote] = useState(null);
   const [docReads, setDocReads] = useState(0);
+
+  const [title,setTitle] = useState("");
 
 
   const increaseDocRead = () => {
@@ -33,7 +33,10 @@ function Vote() {
     if (OpenToVote !== null) {
       console.log("shuffling")
       var cycle = OpenToVote[random(OpenToVote.length)];
-      // console.log(cycle)
+      console.log(cycle)
+      db.doc(`Challenges/Cycle_${cycle}`).get().then(doc=>{
+        setTitle(doc.data().Title)
+      })
       if(cycle===Cycle){
         cycle = OpenToVote[random(OpenToVote.length)]
       }
@@ -75,6 +78,7 @@ function Vote() {
   return (
     <div>
       <VoteBox
+        title = {title}
         LeftPath={
           docNameLeft !== ""
             ? `Submissions/AllSubmissions/${Cycle}/${docNameLeft}`

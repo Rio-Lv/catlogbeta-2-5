@@ -13,21 +13,26 @@ function MyGallery(props) {
       .doc(props.user.uid)
       .onSnapshot((snap) => {
         if (snap.exists) {
-          setReferences(snap.data().references.sort());
+          try{
 
-          references.forEach((reference) => {
-            var current;
-            reference.get().then((doc) => {
-              if (doc.exists) {
-                //console.log('getting doc from reference list in users')
-                console.log(doc.data());
-              } else {
-                console.log("doc not found");
-              }
+            setReferences(snap.data().references.sort());
+  
+            references.forEach((reference) => {
+              var current;
+              reference.get().then((doc) => {
+                if (doc.exists) {
+                  //console.log('getting doc from reference list in users')
+                  console.log(doc.data());
+                } else {
+                  console.log("doc not found");
+                }
+              });
+  
+              console.log(current);
             });
-
-            console.log(current);
-          });
+          }catch{
+            console.log("empty")
+          }
         }
       });
   }, []);

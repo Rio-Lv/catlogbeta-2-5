@@ -1,17 +1,79 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import ImageBox from "./ImageBox";
+const BackBox = styled.div`
+  left: 50%;
+  position: fixed;
+  height: 95%;
+  transform: translate(-50%, 0);
+  top: 70px;
+  display: flex;
+  flex-direction: column;
+  /* background-color: #6d6d6d; */
+  overflow: scroll;
+  @media (max-width: 600px) {
+    display: block;
+    height: 98%;
+    width: 99%;
+    top: 65px;
+    transform: translate(-50%, -3%);
+    border: 2px solid #000000;
+    border-radius: 5px;
+    transition: 1s ease;
+  }
+`;
+const BackBoxShade = styled.div`
+  left: 50%;
+  position: fixed;
+  height: 95%;
+  transform: translate(-50%, 0);
+  top: 70px;
+  display: flex;
+  flex-direction: column;
+  /* background-color: #6d6d6d; */
+  overflow: scroll;
+  background-color: black;
+  opacity: 30%;
+  @media (max-width: 600px) {
+    display: block;
+    height: 98%;
+    width: 99%;
+    top: 65px;
+    transform: translate(-50%, -3%);
+    border: 2px solid #000000;
+    border-radius: 5px;
+    transition: 1s ease;
+  }
+`;
+const SmallerBox = styled.div`
+  display: flex;
+  flex-direction: horizontal;
+  width: 100%;
+  background-color: #202020;
+  border-radius: 5px;
+  @media (max-width: 800px) {
+    flex-direction: column;
+  }
+`;
 const Box = styled.div`
+  border: 1px solid #111111;
+  border-radius: 7px;
+  background-color: #111111;
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  display: flex;
-  flex-direction: horizontal;
-  background-color: #2b2b2b;
-  border-radius: 5px;
-  @media (max-width: 800px) {
-    flex-direction: column;
+`;
+const Title = styled.div`
+  transition: 0.5s ease;
+  position: relative;
+  width: 100%;
+  height: 40px;
+  font-size: 28px;
+  color: white;
+  text-align: center;
+  &:hover {
+    color: #76a4fa;
   }
 `;
 function VoteBox(props) {
@@ -31,18 +93,29 @@ function VoteBox(props) {
 
   return (
     <div>
-      <Box>
-        <ImageBox
-          path={leftPath}
-          shuffle={props.shuffle}
-        ></ImageBox>
-        <ImageBox
-         
-          hover={false}
-          path={rightPath}
-          shuffle={props.shuffle}
-        ></ImageBox>
-      </Box>
+      {window.innerWidth > 800 ? (
+        <div>
+          <Box>
+            <Title>{props.title}</Title>
+            <SmallerBox>
+              <ImageBox path={leftPath} shuffle={props.shuffle}></ImageBox>
+              <ImageBox path={rightPath} shuffle={props.shuffle}></ImageBox>
+            </SmallerBox>
+          </Box>
+        </div>
+      ) : (
+        <div>
+          <BackBox></BackBox>
+          <BackBoxShade></BackBoxShade>
+          <Box style={{ border: "0px" }}>
+            <SmallerBox>
+              <ImageBox path={leftPath} shuffle={props.shuffle}></ImageBox>
+              <Title>{props.title}</Title>
+              <ImageBox path={rightPath} shuffle={props.shuffle}></ImageBox>
+            </SmallerBox>
+          </Box>
+        </div>
+      )}
     </div>
   );
 }

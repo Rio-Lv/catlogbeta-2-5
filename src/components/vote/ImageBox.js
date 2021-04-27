@@ -3,10 +3,11 @@ import CheckIcon from "@material-ui/icons/Check";
 import styled from "styled-components";
 import { db } from "../../firebase";
 import { blue } from "@material-ui/core/colors";
+
 const Glass = styled.div`
   opacity: 0.5;
-  width: 400px;
-  height: 400px;
+  width: 500px;
+  height: 0px;
   background-color: black;
   border: 3px solid transparent;
 
@@ -24,8 +25,8 @@ const Glass = styled.div`
 
 const Frame = styled.div`
   opacity: 1;
-  width: 400px;
-  height: 400px;
+  width: 500px;
+  height: 0px;
   background-color: #363636;
   background-size: contain;
   border: 3px solid #1a1a1a;
@@ -49,6 +50,13 @@ function ImageBox(props) {
   const [check, setCheck] = useState(0);
   const [tint, setTint] = useState(0);
   const [isClicked, setIsClicked] = useState(false);
+  const [expanded,setExpanded] = useState(false);
+  useEffect(()=>{
+      setTimeout(()=>{
+
+          setExpanded(true)
+      },900)
+  },[])
 
   useEffect(() => {
     console.log(props.path);
@@ -57,11 +65,11 @@ function ImageBox(props) {
 
   // function when the submission path changes // on shuffle
   useEffect(() => {
-    var timerA = 500;
-    var timerB = 500;
+    var timerA = 550;
+    var timerB = 550;
     if (isClicked) {
-      timerA = 600;
-      timerB = 400;
+      timerA = 400;
+      timerB = 700;
     } else {
       setTint(1);
     }
@@ -76,7 +84,9 @@ function ImageBox(props) {
               console.log(doc.data());
               try {
                 // once url is set, wait for load before
-                setUrl(doc.data().url);
+                setTimeout(() => {
+                  setUrl(doc.data().url);
+                }, 100);
                 setTimeout(() => {
                   setTint(0);
                   setIsClicked(false);
@@ -107,6 +117,7 @@ function ImageBox(props) {
         className="frame"
         style={{
           backgroundImage: `url(${url})`,
+          height: expanded?`${window.innerWidth>700?500:window.innerHeight*0.4}px`:`${0}`,
         }}
       >
         <CheckIcon
@@ -123,15 +134,16 @@ function ImageBox(props) {
         ></CheckIcon>
         <Glass
           style={{
+            height: expanded?`${window.innerWidth>700?500:window.innerHeight*0.4}px`:`${0}px`,
             opacity: `${tint}`,
             position: "relative",
             transform: "translate(-3px,-207px)",
           }}
-          onMouseLeave = {()=>{
-              setTint(.5)
+          onMouseLeave={() => {
+            setTint(0.5);
           }}
-          onMouseEnter = {()=>{
-              setTint(0)
+          onMouseEnter={() => {
+            setTint(0);
           }}
           onClick={() => {
             checkfunc();
