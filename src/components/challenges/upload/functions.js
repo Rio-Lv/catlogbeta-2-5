@@ -118,7 +118,7 @@ const handleUpload = (image, smallImage, user, item, setImage) => {
                       .get()
                       .then((doc) => {
                         if (doc.exists) {
-                          const references = doc.data().references;
+                          const references = doc.data().references||[];
                           console.log(references);
                           if(references.includes(reference)){
                             console.log('reference already exists')
