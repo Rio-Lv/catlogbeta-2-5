@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import ImageBox from "./ImageBox";
+import firebase from "firebase";
+import { db } from "../../firebase";
+
+const increment = firebase.firestore.FieldValue.increment(1);
+
 const BackBox = styled.div`
   left: 50%;
   position: fixed;
@@ -91,6 +96,21 @@ function VoteBox(props) {
     // console.log(rightPath)
   }, [leftPath, rightPath]);
 
+  const voteFunc = (path) => {
+    console.log("running vot function")
+    console.log("leftPath: " + leftPath)
+    console.log("rightPath: " +rightPath);
+    if(path===leftPath){
+      db.doc(leftPath).set({ wins: increment},{merge:true});
+      db.doc(rightPath).set({ losses: increment},{merge:true});
+    }else if(path===rightPath){
+      db.doc(leftPath).set({ losses: increment},{merge:true});
+      db.doc(rightPath).set({ wins: increment},{merge:true});
+    }else{
+      console.log("no path matches")
+    }
+  };
+
   return (
     <div>
       {window.innerWidth > 800 ? (
@@ -98,8 +118,16 @@ function VoteBox(props) {
           <Box>
             <Title>{props.title}</Title>
             <SmallerBox>
-              <ImageBox path={leftPath} shuffle={props.shuffle}></ImageBox>
-              <ImageBox path={rightPath} shuffle={props.shuffle}></ImageBox>
+              <ImageBox
+                path={leftPath}
+                shuffle={props.shuffle}
+                voteFunc={voteFunc}
+              ></ImageBox>
+              <ImageBox
+                path={rightPath}
+                shuffle={props.shuffle}
+                voteFunc={voteFunc}
+              ></ImageBox>
             </SmallerBox>
           </Box>
         </div>
@@ -109,9 +137,17 @@ function VoteBox(props) {
           <BackBoxShade></BackBoxShade>
           <Box style={{ border: "0px" }}>
             <SmallerBox>
-              <ImageBox path={leftPath} shuffle={props.shuffle}></ImageBox>
+              <ImageBox
+                path={leftPath}
+                shuffle={props.shuffle}
+                voteFunc={voteFunc}
+              ></ImageBox>
               <Title>{props.title}</Title>
-              <ImageBox path={rightPath} shuffle={props.shuffle}></ImageBox>
+              <ImageBox
+                path={rightPath}
+                shuffle={props.shuffle}
+                voteFunc={voteFunc}
+              ></ImageBox>
             </SmallerBox>
           </Box>
         </div>

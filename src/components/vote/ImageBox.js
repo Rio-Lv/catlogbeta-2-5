@@ -50,16 +50,17 @@ function ImageBox(props) {
   const [check, setCheck] = useState(0);
   const [tint, setTint] = useState(0);
   const [isClicked, setIsClicked] = useState(false);
-  const [expanded,setExpanded] = useState(false);
-  useEffect(()=>{
-      setTimeout(()=>{
+  const [expanded, setExpanded] = useState(false);
 
-          setExpanded(true)
-      },900)
-  },[])
+  
+  useEffect(() => {
+    setTimeout(() => {
+      setExpanded(true);
+    }, 900);
+  }, []);
 
   useEffect(() => {
-    console.log(props.path);
+    // console.log(props.path);
     setPath(props.path);
   }, [props.path]);
 
@@ -82,10 +83,11 @@ function ImageBox(props) {
           .then((doc) => {
             if (doc.exists) {
               console.log(doc.data());
+              
               try {
                 // once url is set, wait for load before
                 setTimeout(() => {
-                  setUrl(doc.data().url);
+                  setUrl(doc.data().urlSmall);
                 }, 100);
                 setTimeout(() => {
                   setTint(0);
@@ -117,7 +119,9 @@ function ImageBox(props) {
         className="frame"
         style={{
           backgroundImage: `url(${url})`,
-          height: expanded?`${window.innerWidth>700?500:window.innerHeight*0.4}px`:`${0}`,
+          height: expanded
+            ? `${window.innerWidth > 700 ? 500 : window.innerHeight * 0.4}px`
+            : `${0}`,
         }}
       >
         <CheckIcon
@@ -134,7 +138,9 @@ function ImageBox(props) {
         ></CheckIcon>
         <Glass
           style={{
-            height: expanded?`${window.innerWidth>700?500:window.innerHeight*0.4}px`:`${0}px`,
+            height: expanded
+              ? `${window.innerWidth > 700 ? 500 : window.innerHeight * 0.4}px`
+              : `${0}px`,
             opacity: `${tint}`,
             position: "relative",
             transform: "translate(-3px,-207px)",
@@ -148,7 +154,7 @@ function ImageBox(props) {
           onClick={() => {
             checkfunc();
             setIsClicked(true);
-
+            props.voteFunc(props.path)
             props.shuffle();
           }}
         ></Glass>
