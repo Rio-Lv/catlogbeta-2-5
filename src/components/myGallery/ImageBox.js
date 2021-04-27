@@ -4,7 +4,7 @@ import { db } from "../../firebase";
 import { getRGBcore } from "./functions";
 
 const imageWidth = 300;
-const pad = 10;
+const pad = 5;
 const Box = styled.div`
   width: ${imageWidth}px;
   height: ${imageWidth + 44}px;
@@ -17,7 +17,7 @@ const Box = styled.div`
   @media (max-width: 600px) {
     position: static;
     transform: translate(
-      ${window.innerWidth / 2 - (imageWidth + pad) / 2 - pad * 2}px,
+      ${window.innerWidth / 2 - (imageWidth + pad*4) / 2 - pad * 2}px,
       0
     );
   }
@@ -29,7 +29,7 @@ const Text = styled.div`
   left: 0px;
   top: 300px;
   padding-bottom: 4px;
-  font-size: 30px;
+  font-size: 24px;
   text-align: center;
   line-height: 40px;
   border-bottom-left-radius: 5px;
