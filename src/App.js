@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { auth } from "./firebase";
 import "./App.css";
+// remember to remove this
+import Admin from "./components/admin/Admin"
+
 import Challenges from "./components/challenges/Challenges";
 import Gallery from "./components/gallery/Gallery";
 import Home from "./components/home/Home";
@@ -40,6 +43,11 @@ function App() {
     {
       name: "Vote",
       component: <Vote setSelected={setSelected} />,
+      type: "account",
+    },
+    {
+      name: "Admin",
+      component: <Admin setSelected={setSelected} />,
       type: "account",
     },
   ];

@@ -29,11 +29,11 @@ function Vote() {
 
   const shuffle = () => {
     // console.log("open to vote " + OpenToVote);
-
+    console.log("shuffling")
     if (OpenToVote !== null) {
       console.log("shuffling")
       var cycle = OpenToVote[random(OpenToVote.length)];
-      console.log(cycle)
+      // console.log(cycle)
       if(cycle===Cycle){
         cycle = OpenToVote[random(OpenToVote.length)]
       }
@@ -46,7 +46,7 @@ function Vote() {
           // console.log("data from Voting list cycle :" + cycle);
           // console.log(doc.data().List);
           const listSize = doc.data().List.length;
-          console.log("list size is : " + listSize);
+          // console.log("list size is : " + listSize);
           if (listSize > 1) {
             const random1 = random(listSize)
             var random2 = random(listSize)
@@ -57,10 +57,7 @@ function Vote() {
               setDocNameLeft(doc.data().List[random1]);
               setDocNameRight(doc.data().List[random2]);
             }
-            
-            // console.log(
-            //   "setting doc names to the react hooks on Vote component load"
-            // );
+
           } else {
             console.log("list size too small");
             cycle = OpenToVote[random(OpenToVote.length)]
@@ -68,23 +65,12 @@ function Vote() {
         }
       });
     }
-
   };
 
   useEffect(() => {
     // console.log(OpenToVote);
     shuffle();
   }, [OpenToVote]);
-
-  useEffect(() => {
-    // console.log("docReads: "+docReads);
-  }, [docReads]);
-  //run a function on change to the randomized doc names
-  useEffect(() => {
-    // console.log("Cycle " + Cycle);
-    // console.log("docNameLeft " + docNameLeft);
-    // console.log("docNameRight " + docNameRight);
-  }, [docNameLeft, docNameRight, Cycle]);
 
   return (
     <div>

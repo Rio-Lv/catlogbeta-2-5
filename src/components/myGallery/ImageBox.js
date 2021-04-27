@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import {db} from '../../firebase'
+import { db } from "../../firebase";
 import { getRGBcore } from "./functions";
 
 const imageWidth = 300;
@@ -49,8 +49,8 @@ function ImageBox(props) {
 
   const [color, setColor] = useState("#ffd6a0");
   const [borderColor, setBorderColor] = useState("#000000");
-  
-  const { R, G, B } = getRGBcore(timeleft);// for some reason, offsetting the time left fixes the color sync with challenges
+
+  const { R, G, B } = getRGBcore(timeleft); // for some reason, offsetting the time left fixes the color sync with challenges
 
   useEffect(() => {
     // console.log(props.reference)
@@ -58,13 +58,22 @@ function ImageBox(props) {
       db.doc(props.reference).onSnapshot((doc) => {
         // console.log("displaying from submissions Sub Image box");
         // console.log(doc.data().cycle);
-        const timeleft = ((doc.data().end - Date.now())/doc.data().cycleLength).toFixed(3)
+        if (doc.exists) {
+          const timeleft = (
+            (doc.data().end - Date.now()) /
+            doc.data().cycleLength
+          ).toFixed(3);
 
-        // console.log(timeleft)
+          // console.log(timeleft)
 
-        setTimeleft(timeleft);
-        setUrl(doc.data().urlSmall);
-        setTitle(doc.data().title);
+          setTimeleft(timeleft);
+          setUrl(doc.data().urlSmall);
+          setTitle(doc.data().title);
+        }else{
+          setTimeleft(0);
+          setUrl("");
+          setTitle("OOPS");
+        }
       });
     } catch (err) {
       console.log(err);
@@ -72,7 +81,12 @@ function ImageBox(props) {
   }, [props.reference]);
   return (
     <Box
-      style={{ border:timeleft>0? `3px solid rgba(${R * W}, ${G * W}, ${B * W}`:`3px solid${borderColor}` }}
+      style={{
+        border:
+          timeleft > 0
+            ? `3px solid rgba(${R * W}, ${G * W}, ${B * W}`
+            : `3px solid${borderColor}`,
+      }}
       onMouseEnter={() => {
         setBorderColor("#ff8800");
         setColor("#ff8800");
@@ -85,10 +99,10 @@ function ImageBox(props) {
         setBase(50);
         setW(0.7);
       }}
-      onClick = {()=>{
-        console.log('imageBox clicked')
-        console.log('props.reference')
-        console.log(props.reference)
+      onClick={() => {
+        console.log("imageBox clicked");
+        console.log("props.reference");
+        console.log(props.reference);
         props.setReference(props.reference);
       }}
     >
@@ -105,7 +119,16 @@ function ImageBox(props) {
         />
       </div>
 
-      <Text style={{  color: timeleft>0?`rgba(${R * W + base}, ${G * W + base}, ${B * W + base}`:color }}>{title}</Text>
+      <Text
+        style={{
+          color:
+            timeleft > 0
+              ? `rgba(${R * W + base}, ${G * W + base}, ${B * W + base}`
+              : color,
+        }}
+      >
+        {title}
+      </Text>
     </Box>
   );
 }
