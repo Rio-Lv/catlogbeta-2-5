@@ -1,32 +1,14 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { db } from "../../firebase";
-
-const Frame = styled.div`
-  width: 300px;
-  height: 300px;
-  background-color: black;
-  border: 3px solid #000000;
-  margin: 3px;
-  background-size: contain;
-  border-radius: 2px;
-  transition:.3s ease;
-  &:hover{
-    border: 3px solid #44abff;
-  }
-  @media(max-width:800px){
-    width: ${window.innerWidth-25}px;
-    height: ${window.innerWidth-25}px;
-    
-    transform: translate(${0}px, 0%);
-  }
-`;
+import "./styles.css";
 const Name = styled.div`
+  font-family: "Dancing Script", cursive;
+  opacity: 0;
   width: 60%;
   padding-left: 20px;
   height: 30px;
   text-align: left;
-
   font-size: 20px;
   position: relative;
   color: white;
@@ -34,7 +16,30 @@ const Name = styled.div`
   top: 100%;
   transform: translate(0%, -100%);
   line-height: 27px;
-  border-top-right-radius:25px;
+  border-top-right-radius: 10px;
+  transition: 0.6s ease;
+`;
+const Frame = styled.div`
+  width: 300px;
+  height: 300px;
+  background-color: black;
+  border: 3px solid #b16400;
+  margin: 3px;
+  background-size: contain;
+  border-radius: 2px;
+  transition: 0.3s ease;
+  &:hover {
+    border: 3px solid #44abff;
+  }
+  &:hover ${Name} {
+    opacity: 1;
+  }
+  @media (max-width: 800px) {
+    width: ${window.innerWidth - 25}px;
+    height: ${window.innerWidth - 25}px;
+
+    transform: translate(${0}px, 0%);
+  }
 `;
 
 function ImageBox(props) {

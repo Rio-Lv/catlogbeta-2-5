@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { db } from "../../firebase";
 import styled from "styled-components";
 import ImageRow from "./ImageRow";
+import "./styles.css"
 
 const InvisibleBox = styled.div`
   position:fixed;
@@ -36,13 +37,14 @@ const CenterBox = styled.div`
 `;
 
 const Title = styled.div`
+  font-family: 'Great Vibes', cursive;
   transform: translate(-0px, 0);
-  line-height: 50px;
-  height: 55px;
-  color: #ffffff;
-  font-size: 36px;
+  line-height: 95px;
+  height: 90px;
+  color: #ffa319;
+  font-size: 64px;
   width: 99.6%;
-  background-color: #222222;
+  background-color: #181818;
   border-radius: 3px;
   border: 2px solid #000000;
   @media(max-width:800px){
@@ -70,7 +72,7 @@ function Gallery() {
       <InvisibleBox>
         <CenterBox>
           <div>
-            <Title> HALL OF FAME </Title>
+            <Title> Hall of Fame </Title>
             <ImageRow cycle={cycles[0]}></ImageRow>
             <ImageRow cycle={cycles[0]}></ImageRow>
             <ImageRow cycle={cycles[0]}></ImageRow>

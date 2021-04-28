@@ -7,7 +7,7 @@ const Row = styled.div`
   display: flex;
   flex-direction: horizontal;
   width: 100%;
-  @media(max-width:800px){
+  @media (max-width: 800px) {
     flex-direction: column;
   }
 `;
@@ -17,7 +17,7 @@ const RowBox = styled.div`
   background-color: #111111;
   border-radius: 3px;
   border: 3px solid #000000;
-
+  text-align:center;
   margin-top: 15px;
   margin-left: 0px;
   margin-right: 0px;
@@ -25,13 +25,14 @@ const RowBox = styled.div`
 `;
 
 const Title = styled.div`
+ 
   margin-bottom: 3px;
   font-size: 26px;
   line-height: 45px;
   height: 45px;
   color: #ffae00;
   width: 100%;
-  /* background-color: #000000; */
+  background-color: #000000;
 `;
 function ImageRow(props) {
   const [first, setFirst] = useState("");
@@ -65,7 +66,6 @@ function ImageRow(props) {
   return (
     <div>
       <RowBox>
-      
         <Title>{title.toUpperCase()}</Title>
         <Row>
           <ImageBox reference={first}></ImageBox>
