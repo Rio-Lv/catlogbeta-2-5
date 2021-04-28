@@ -47,6 +47,7 @@ exports.updateChallenges = functions.firestore
   .document("Sync/Current")
   .onUpdate((change, context) => {
     // Listen for any change on document `Sync/Constants` in collection `users`
+    // when a new current is created, updates the challenges by adding that creating a doc
     db.collection("Challenges")
       .doc(`Cycle_${change.after.data().Cycle}`)
       .set({
@@ -236,13 +237,13 @@ exports.autoGenerateSubmissions = functions.firestore
                                 {
                                   cycle: doc.id,
                                   displayName: randomID,
-                                  losses: 0,
+                                  losses: 1,
                                   title: title,
                                   url: url,
                                   urlSmall: url,
                                   user: randomID,
                                   winrate: 0.5,
-                                  wins: 0,
+                                  wins: 1,
                                 },
                                 { merge: true }
                               );
@@ -253,5 +254,42 @@ exports.autoGenerateSubmissions = functions.firestore
               });
             });
         }
+      });
+  });
+
+exports.updateOpenToSort = functions.firestore
+  .document("Sync/Current")
+  .onWrite((change, context) => {
+    console.log("updating Open to Sort");
+    db.collection("Sync")
+      .doc("Constants")
+      .get()
+      .then((doc) => {
+        db.doc("Sync/Current")
+          .get()
+          .then((current) => {
+            const CompletedCycle = current.data().CompletedCycle;
+
+            db.doc("Sync/OpenToSort")
+              .get()
+              .then((document) => {
+                if (document.exists) {
+                  const OpenToSort = document.data().OpenToSort || [];
+                  if (!OpenToSort.includes(CompletedCycle)) {
+                    db.collection("Sync")
+                      .doc("OpenToSort")
+                      .set({
+                        OpenToSort: [...OpenToSort, CompletedCycle],
+                      });
+                  } else {
+                    console.log("already included");
+                  }
+                } else {
+                  db.collection("Sync")
+                    .doc("OpenToSort")
+                    .set({ OpenToSort: [CompletedCycle] });
+                }
+              });
+          });
       });
   });

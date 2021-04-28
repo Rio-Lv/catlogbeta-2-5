@@ -7,7 +7,7 @@ const imageWidth = 300;
 const pad = 5;
 const Box = styled.div`
   width: ${imageWidth}px;
-  height: ${imageWidth + 44}px;
+  height: ${imageWidth + 34}px;
   margin: ${pad}px;
   border-radius: 8px;
   background-repeat: no-repeat;
@@ -29,9 +29,9 @@ const Text = styled.div`
   left: 0px;
   top: 300px;
   padding-bottom: 4px;
-  font-size: 24px;
+  font-size: 20px;
   text-align: center;
-  line-height: 40px;
+  line-height: 30px;
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
   transition: 0.3s ease;

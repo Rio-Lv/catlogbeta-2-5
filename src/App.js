@@ -26,7 +26,7 @@ function App() {
       type: "public",
     },
     {
-      name: "Gallery",
+      name: "Hall of Fame",
       component: <Gallery setSelected={setSelected} />,
       type: "public",
     },

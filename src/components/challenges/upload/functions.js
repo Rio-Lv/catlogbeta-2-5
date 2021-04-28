@@ -93,8 +93,8 @@ const handleUpload = (image, smallImage, user, item, setImage) => {
                       cycleLength: item.cycleLength,
                       url: url,
                       urlSmall: urlSmall,
-                      wins: 0,
-                      losses: 0,
+                      wins: 1,
+                      losses: 1,
                       winrate: 0.5,
                     };
                     // send to cycle submissions - user
