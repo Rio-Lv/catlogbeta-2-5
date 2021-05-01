@@ -5,7 +5,7 @@ const Box = styled.div`
   position: fixed;
   height: 95%;
   transform: translate(-50%, 0);
-  top: 70px;
+  top: 55px;
   display: flex;
   flex-direction: column;
 

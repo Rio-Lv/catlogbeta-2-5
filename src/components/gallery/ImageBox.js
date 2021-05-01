@@ -3,7 +3,8 @@ import styled from "styled-components";
 import { db } from "../../firebase";
 import "./styles.css";
 const Name = styled.div`
-  font-family: "Dancing Script", cursive;
+  display:none;
+  font-family: 'Montserrat', sans-serif;
   opacity: 0;
   width: 60%;
   padding-left: 20px;
@@ -15,29 +16,23 @@ const Name = styled.div`
   background-color: black;
   top: 100%;
   transform: translate(0%, -100%);
-  line-height: 27px;
-  border-top-right-radius: 10px;
-  transition: 0.6s ease;
+  line-height: 30px;
+  border-top-right-radius: 20px;
+  transition: 0.9s ease;
 `;
 const Frame = styled.div`
-  width: 300px;
-  height: 300px;
+  width: 250px;
+  height: 250px;
   background-color: black;
-  border: 3px solid #b16400;
+  background-size: cover;
   margin: 3px;
-  background-size: contain;
+  background-size: cover;
   border-radius: 2px;
-  transition: 0.3s ease;
-  &:hover {
-    border: 3px solid #44abff;
-  }
+  transition: .3s ease;
   &:hover ${Name} {
     opacity: 1;
   }
   @media (max-width: 800px) {
-    width: ${window.innerWidth - 25}px;
-    height: ${window.innerWidth - 25}px;
-
     transform: translate(${0}px, 0%);
   }
 `;
@@ -45,21 +40,107 @@ const Frame = styled.div`
 function ImageBox(props) {
   const [url, setUrl] = useState("");
   const [name, setName] = useState("");
+  const [height, setHeight] = useState(0);
+  const [width, setWidth] = useState(0);
+
+  const [topThickness, setTopThickeness] = useState(5);
+  const [sideThickness, setSideThickness] = useState(150);
+  const [borderColor, setBorderColor] = useState("black");
+  const [hover, setHover] = useState(false);
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (window.innerWidth > 700) {
+        setTopThickeness(150);
+        setSideThickness(150);
+
+        setTimeout(() => {
+          setWidth(250);
+          setHeight(250);
+          setTopThickeness(30);
+          setSideThickness(30);
+          setHover(true);
+        }, 600);
+      } else {
+        // mobile
+        // setTopThickeness((window.innerWidth - 24) / 2 );
+        // setSideThickness((window.innerWidth - 24) / 2 );
+        setTimeout(() => {
+          setWidth(250);
+          setHeight(250);
+          setTopThickeness(30);
+          setSideThickness(30);
+          setHover(true);
+        }, 600);
+      }
+    }, 1500);
+  }, []);
   useEffect(() => {
     if (props.reference !== "") {
+      console.log(props.reference);
       db.doc(props.reference)
         .get()
         .then((doc) => {
-          console.log(doc.data());
-          setUrl(doc.data().urlSmall);
-          setName(doc.data().displayName);
+          if (doc.exists) {
+            setUrl(doc.data().urlSmall);
+            setName(doc.data().displayName);
+            console.log(doc.data());
+          }
         });
+    } else {
+      console.log("reference undefined or empty");
     }
   }, [props.reference]);
   return (
     <div>
-      <Frame style={{ backgroundImage: `url(${url})` }}>
-        <Name>{name}</Name>
+      <Frame
+        onMouseEnter={() => {
+          if (hover) {
+            if (window.innerWidth > 700) {
+              setHeight(300);
+              setWidth(300);
+              setBorderColor("#44abff");
+              setTopThickeness(5);
+              setSideThickness(5);
+            } else {
+              setHeight(300);
+              setWidth(300);
+              setBorderColor("#44abff");
+              setTopThickeness(5);
+              setSideThickness(5);
+            }
+          }
+        }}
+        onMouseLeave={() => {
+          if (hover) {
+            if (window.innerWidth > 700) {
+              setHeight(250);
+              setWidth(250);
+              setBorderColor("black");
+              setTopThickeness(30);
+              setSideThickness(30);
+            } else {
+              setWidth(250);
+              setHeight(250);
+
+              setBorderColor("black");
+              setTopThickeness(30);
+              setSideThickness(30);
+            }
+          }
+        }}
+        style={{
+          backgroundImage: `url(${url})`,
+          height: `${height}px`,
+          width: `${width}px`,
+          border: `solid ${borderColor}`,
+          borderLeftWidth: `${sideThickness}px `,
+          borderRightWidth: `${sideThickness}px`,
+          borderTopWidth: `${topThickness}px `,
+          borderBottomWidth: `${topThickness}px `,
+        }}
+      >
+        <Name style={{display:hover?"block":"none"}}>{name}</Name>
       </Frame>
     </div>
   );

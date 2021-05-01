@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../../firebase";
 import Grid from "./Grid";
+import styled from "styled-components";
+
+const Title = styled.div`
+
+`
 var collator = new Intl.Collator(String, {
   numeric: true,
   sensitivity: "base",

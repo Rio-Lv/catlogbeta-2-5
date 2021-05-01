@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { db } from "../../firebase";
 import styled from "styled-components";
 import ImageBox from "./ImageBox";
+import "./styles.css";
 
 const Row = styled.div`
   display: flex;
@@ -12,27 +13,28 @@ const Row = styled.div`
   }
 `;
 const RowBox = styled.div`
+  
   display: flex;
   flex-direction: column;
-  background-color: #111111;
+  background-color: #1a1a1a;
   border-radius: 3px;
   border: 3px solid #000000;
-  text-align:center;
-  margin-top: 15px;
+  text-align: center;
+  margin-top: 5px;
   margin-left: 0px;
   margin-right: 0px;
   padding: 3px;
 `;
 
 const Title = styled.div`
- 
+  font-family: "Montserrat", sans-serif;
   margin-bottom: 3px;
   font-size: 26px;
-  line-height: 45px;
-  height: 45px;
-  color: #ffae00;
+  line-height: 32px;
+  height: 30px;
+  color: #fdfdfd;
   width: 100%;
-  background-color: #000000;
+  /* background-color: #000000; */
 `;
 function ImageRow(props) {
   const [first, setFirst] = useState("");
@@ -40,37 +42,52 @@ function ImageRow(props) {
   const [third, setThird] = useState("");
 
   const [title, setTitle] = useState("");
+  const [expanded, setExpanded] = useState(true);
 
   useEffect(() => {
-    console.log(props.cycle);
-    if (props.cycle !== undefined) {
-      db.doc(`Winners/${props.cycle}`)
-        .get()
-        .then((doc) => {
-          const References = doc.data().References;
-          console.log(References);
-          setFirst(References[0]);
-          setSecond(References[1]);
-          setThird(References[2]);
-        });
-
-      db.doc(`Challenges/Cycle_${props.cycle}`)
-        .get()
-        .then((item) => {
-          if (item.exists) {
-            setTitle(item.data().Title);
-          }
-        });
-    }
+    db.doc(`Winners/${props.cycle}`)
+      .get()
+      .then((doc) => {
+        setFirst(doc.data().top3paths[0]);
+        setSecond(doc.data().top3paths[1]);
+        setThird(doc.data().top3paths[2]);
+      });
   }, [props.cycle]);
+
+  useEffect(() => {
+    db.doc(`Challenges/Cycle_${props.cycle}`)
+      .get()
+      .then((doc) => {
+        setTitle(doc.data().Title);
+      });
+  }, [props.cycle]);
+
+ 
+
   return (
     <div>
       <RowBox>
-        <Title>{title.toUpperCase()}</Title>
+        <Title
+          
+          onClick={() => {
+            console.log("title has been clicked");
+            if(expanded){
+              setExpanded(false)
+            }else{
+              setExpanded(true)
+            }
+          }}
+        >
+          {title}
+        </Title>
         <Row>
           <ImageBox reference={first}></ImageBox>
-          <ImageBox reference={second}></ImageBox>
-          <ImageBox reference={third}></ImageBox>
+          {expanded ? (
+            <div style = {{display:"flex",flexDirection:window.innerWidth>700?"horizontal":"column"}}>
+              <ImageBox reference={second}></ImageBox>
+              <ImageBox reference={third}></ImageBox>
+            </div>
+          ) : null}
         </Row>
       </RowBox>
     </div>

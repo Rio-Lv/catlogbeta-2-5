@@ -17,7 +17,7 @@ const Image = Styled.img`
 function Backdrop(props) {
   const [size, setSize] = useState(window.innerWidth);
 
-  const url = "https://preview.redd.it/6zzr0x68ss911.png?width=960&crop=smart&auto=webp&s=6036a5090083eae9145ee614c1adc1494ce37df6";
+  const url = "https://i.pinimg.com/originals/a8/57/57/a8575717e6163a5b978606448671dee9.png";
 
   const sizeImage = () => {
     if (window.innerWidth > 600) {

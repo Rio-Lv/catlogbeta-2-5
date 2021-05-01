@@ -4,20 +4,21 @@ import { db } from "../../firebase";
 import { getRGBcore } from "./functions";
 
 const imageWidth = 300;
-const pad = 5;
+const pad = 3;
 const Box = styled.div`
   width: ${imageWidth}px;
   height: ${imageWidth + 34}px;
   margin: ${pad}px;
-  border-radius: 8px;
+  border-radius: 5px;
   background-repeat: no-repeat;
   background-size: cover;
   transition: 0.5s ease;
+  background-color: black;
 
   @media (max-width: 600px) {
     position: static;
     transform: translate(
-      ${window.innerWidth / 2 - (imageWidth + pad*4) / 2 - pad * 2}px,
+      ${window.innerWidth / 2 - (imageWidth + pad * 4) / 2 - pad * 2}px,
       0
     );
   }
@@ -27,14 +28,14 @@ const Text = styled.div`
   background-color: #1a1a1a;
   position: relative;
   left: 0px;
-  top: 300px;
+  /* top: 300px; */
   padding-bottom: 4px;
   font-size: 20px;
   text-align: center;
   line-height: 30px;
-  border-bottom-left-radius: 5px;
-  border-bottom-right-radius: 5px;
-  transition: 0.3s ease;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  transition: 0.6s ease;
 `;
 
 // gets image from firestore reference
@@ -50,8 +51,22 @@ function ImageBox(props) {
   const [color, setColor] = useState("#ffd6a0");
   const [borderColor, setBorderColor] = useState("#000000");
 
+  const [height, setHeight] = useState(0);
+  const [height2, setHeight2] = useState(70)
+  const [opacity, setOpacity] = useState(0);
+
   const { R, G, B } = getRGBcore(timeleft); // for some reason, offsetting the time left fixes the color sync with challenges
 
+  // delay image grow animation
+  useEffect(() => {
+    setTimeout(() => {
+      setHeight(imageWidth);
+      setHeight2(imageWidth)
+      setTimeout(() => {
+        setOpacity(1);
+      }, 500+timeleft*1000);
+    }, 1000);
+  }, []);
   useEffect(() => {
     // console.log(props.reference)
     try {
@@ -69,7 +84,7 @@ function ImageBox(props) {
           setTimeleft(timeleft);
           setUrl(doc.data().urlSmall);
           setTitle(doc.data().title);
-        }else{
+        } else {
           setTimeleft(0);
           setUrl("");
           setTitle("OOPS");
@@ -82,6 +97,7 @@ function ImageBox(props) {
   return (
     <Box
       style={{
+        height: `${height2 + 34}px `,
         border:
           timeleft > 0
             ? `3px solid rgba(${R * W}, ${G * W}, ${B * W}`
@@ -109,10 +125,13 @@ function ImageBox(props) {
       <div>
         <img
           style={{
+            opacity: `${opacity}`,
             position: "fixed",
+            height: `${imageWidth}px`,
             width: `${imageWidth}px`,
-            borderTopRightRadius: "5px",
-            borderTopLeftRadius: "5px",
+            borderTopRightRadius: "3px",
+            borderTopLeftRadius: "3px",
+            transition: "0.4s ease",
           }}
           src={url}
           alt=""
@@ -121,13 +140,14 @@ function ImageBox(props) {
 
       <Text
         style={{
+          top: `${height}px`,
           color:
             timeleft > 0
               ? `rgba(${R * W + base}, ${G * W + base}, ${B * W + base}`
               : color,
         }}
       >
-        {title}
+        {title.toUpperCase()}
       </Text>
     </Box>
   );

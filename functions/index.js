@@ -5,7 +5,8 @@ admin.initializeApp();
 const db = admin.firestore();
 
 exports.setCurrent = functions.pubsub
-  .schedule("every 1440 minutes")
+  .schedule("0 0 * * *")
+  .timeZone("Africa/Abidjan")
   .onRun((context) => {
     console.log("updating Current");
     const random = randomPictionaryWords({
@@ -13,36 +14,40 @@ exports.setCurrent = functions.pubsub
       wordsPerString: 1,
       join: " ",
     });
-    console.log(random);
+    // console.log(random);
     const now = Date.now();
     var date = new Date();
 
-    db.collection("Sync")
-      .doc("Constants")
+    db.doc("Sync/Constants")
       .get()
       .then((doc) => {
-        if (doc.exists) {
-          const CycleLength = doc.data().CycleLength;
-          const DurationLength = doc.data().DurationLength;
-          const StartDate = doc.data().StartDate;
-          const CurrentCycle = Math.floor((now - StartDate) / CycleLength) + 1;
+        const NumActive = doc.data().NumActive;
+        const CycleLength = doc.data().CycleLength;
+        // const DurationLength = doc.data().DurationLength;
+        const StartDate = doc.data().StartDate;
+        const CurrentCycle = Math.floor((now - StartDate) / CycleLength) - 0;
+        const VoteCompletedCycle = CurrentCycle - 2 * NumActive;
+        const SubmitCompletedCycle = CurrentCycle - NumActive;
 
-          db.collection("Sync")
-            .doc("Current")
-            .set({
-              ReadableIssueTime: date.toDateString(),
-              Cycle: CurrentCycle,
-              Title: random,
-              Start: now,
-              End: now + DurationLength,
-              CollectionPath: `/Submissions/AllSubmissions/Cycle_${CurrentCycle}`,
-            });
-        } else {
-          console.log("doc does not exist");
-        }
+        const millisPerDay = 1000 * 60 * 60 * 24;
+        const millisPerWeek = millisPerDay * 7;
+        const CycleStart = CurrentCycle * millisPerDay + StartDate;
+        const CycleEnd = CycleStart + millisPerWeek;
+
+        db.collection("Sync")
+          .doc("Current")
+          .set({
+            ReadableIssueTime: date.toDateString(),
+            Cycle: CurrentCycle,
+            VoteCompletedCycle: VoteCompletedCycle,
+            SubmitCompletedCycle: SubmitCompletedCycle,
+            Title: random,
+            Start: CycleStart,
+            End: CycleEnd,
+            CollectionPath: `/Submissions/AllSubmissions/Cycle_${CurrentCycle}`,
+          });
       });
   });
-
 exports.updateChallenges = functions.firestore
   .document("Sync/Current")
   .onUpdate((change, context) => {
@@ -60,7 +65,6 @@ exports.updateChallenges = functions.firestore
         CollectionPath: change.after.data().CollectionPath,
       });
   });
-
 exports.updateOpenToSubmit = functions.firestore
   .document("Sync/Current")
   .onUpdate((change, context) => {
@@ -113,183 +117,243 @@ exports.updateOpenToVote = functions.firestore
           });
       });
   });
+// running this after Submissions have been generated
+const updateVotingList = () => {
+  console.log("running update Voting list");
+  db.doc("Sync/OpenToVote")
+    .get()
+    .then((doc) => {
+      if (doc.exists) {
+        // console.log(doc.data().OpenToVote)
+        //clear old
+        doc.data().OpenToVote.forEach((Cycle) => {
+          db.doc(`Challenges/Cycle_${Cycle}`)
+            .get()
+            .then((challenge) => {
+              const cycle = challenge.data().Cycle;
 
-exports.updateChallengesCycleLength = functions.firestore
-  .document("Sync/Current")
-  .onUpdate((change, context) => {
-    // getting Open to vote doc, only these collection should have changing sizes
-    db.collection("Sync")
-      .doc("OpenToVote")
-      .get()
-      .then((doc) => {
-        if (doc.exists) {
-          const OpenToVote = doc.data().OpenToVote;
-          console.log(OpenToVote);
-          OpenToVote.forEach((cycle) => {
-            console.log(cycle);
-
-            db.collection(`Submissions/AllSubmissions/${cycle}/`)
-              .get()
-              .then((snap) => {
-                console.log(snap.size);
-
-                db.doc(`Challenges/Cycle_${cycle}`).set(
-                  {
-                    CollectionSize: snap.size || 0,
-                  },
-                  { merge: true }
-                );
-              });
-          });
-        }
-      });
-  });
-
-exports.updateVotingList = functions.firestore
-  .document("Sync/OpenToVote")
-  .onWrite((change, context) => {
-    db.doc("Sync/OpenToVote")
-      .get()
-      .then((doc) => {
-        if (doc.exists) {
-          // console.log(doc.data().OpenToVote)
-          //clear old
-          doc.data().OpenToVote.forEach((Cycle) => {
-            db.doc(`Challenges/Cycle_${Cycle}`)
-              .get()
-              .then((challenge) => {
-                const cycle = challenge.data().Cycle;
-
-                db.collection(`/Submissions/AllSubmissions/${cycle}`)
-                  .get()
-                  .then((collection) => {
-                    const array = [];
-                    collection.forEach((doc) => {
-                      array.push(doc.id);
-                    });
-                    db.doc(`VotingList/${cycle}`).set(
-                      {
-                        List: array,
-                      },
-                      { merge: true }
-                    );
-                    db.collection("VotingList")
-                      .get()
-                      .then((snapshot) => {
-                        console.log(doc.data().OpenToVote);
-                        snapshot.forEach((cycle) => {
-                          console.log(cycle.id);
-                          if (doc.data().OpenToVote.includes(cycle.id)) {
-                            console.log("Open to Vote");
-                          } else {
-                            console.log(
-                              "expired submission, now deleting from Voting List"
-                            );
-                            db.doc(`VotingList/${cycle.id}`).delete();
-                          }
-                        });
-                      });
+              db.collection(`/Submissions/AllSubmissions/${cycle}`)
+                .get()
+                .then((collection) => {
+                  const array = [];
+                  collection.forEach((doc) => {
+                    array.push(doc.id);
                   });
-              });
-          });
-        }
-      });
-  });
-
-exports.autoGenerateSubmissions = functions.firestore
-  .document("Sync/OpenToVote")
+                  db.doc(`VotingList/${cycle}`).set(
+                    {
+                      List: array,
+                    },
+                    { merge: true }
+                  );
+                  db.collection("VotingList")
+                    .get()
+                    .then((snapshot) => {
+                      console.log(doc.data().OpenToVote);
+                      snapshot.forEach((cycle) => {
+                        console.log(cycle.id);
+                        if (doc.data().OpenToVote.includes(cycle.id)) {
+                          console.log("Open to Vote");
+                        } else {
+                          console.log(
+                            "expired submission, now deleting from Voting List"
+                          );
+                          db.doc(`VotingList/${cycle.id}`).delete();
+                        }
+                      });
+                    });
+                });
+            });
+        });
+      }
+    });
+};
+exports.fixFreshToVote = functions.firestore
+  .document("Sync/Current")
   .onWrite((change, context) => {
     db.doc("Template/Cats")
       .get()
       .then((doc) => {
         if (doc.exists) {
           const CatArray = doc.data().CatArray;
-          //=======
-          db.collection("VotingList")
+
+          db.doc("Sync/Current")
             .get()
-            .then((collection) => {
-              collection.forEach((doc) => {
-                db.collection(`Submissions/AllSubmissions/${doc.id}`)
-                  .get()
-                  .then((snap) => {
-                    console.log(`cycle ${doc.id} : size ${snap.size}`);
-                    if (snap.size < 10) {
-                      //========
-                      db.collection("Challenges")
-                        .doc(`Cycle_${doc.id}`)
-                        .get()
-                        .then((challenge) => {
-                          const title = challenge.data().Title;
+            .then((current) => {
+              const SubmitCompletedCycle = current.data().SubmitCompletedCycle;
+              console.log("Submit Completed Cycle: " + SubmitCompletedCycle);
+              db.collection(
+                `Submissions/AllSubmissions/${SubmitCompletedCycle}`
+              )
+                .get()
+                .then((snap) => {
+                  console.log(`cycle ${doc.id} : size ${snap.size}`);
+                  if (snap.size < 10) {
+                    //========
+                    db.collection("Challenges")
+                      .doc(`Cycle_${SubmitCompletedCycle}`)
+                      .get()
+                      .then((challenge) => {
+                        const title = challenge.data().Title;
 
-                          CatArray.forEach((url) => {
-                            const randomID = `TemplateID_${Math.floor(
-                              Math.random() * 1000
-                            )}`;
+                        CatArray.forEach((url) => {
+                          const randomID = `TemplateID_${Math.floor(
+                            Math.random() * 1000
+                          )}`;
 
-                            console.log(randomID);
-                            console.log("adding these to submissions ");
-                            //=====
-                            db.collection(
-                              `Submissions/AllSubmissions/${doc.id}`
-                            )
-                              .doc(randomID)
-                              .set(
-                                {
-                                  cycle: doc.id,
-                                  displayName: randomID,
-                                  losses: 1,
-                                  title: title,
-                                  url: url,
-                                  urlSmall: url,
-                                  user: randomID,
-                                  winrate: 0.5,
-                                  wins: 1,
-                                },
-                                { merge: true }
-                              );
-                          });
+                          console.log(randomID);
+                          console.log("adding these to submissions ");
+                          //=====
+                          db.collection(
+                            `Submissions/AllSubmissions/${SubmitCompletedCycle}`
+                          )
+                            .doc(randomID)
+                            .set(
+                              {
+                                cycle: SubmitCompletedCycle,
+                                displayName: randomID,
+                                losses: 0,
+                                title: title,
+                                url: url,
+                                urlSmall: url,
+                                user: randomID,
+                                winrate: 0.5,
+                                wins: 0,
+                              },
+                              { merge: true }
+                            );
                         });
-                    }
-                  });
-              });
+                      });
+                  } else {
+                    console.log("no need to change, enough submissions");
+                  }
+                });
+            })
+            .then(() => {
+              console.log("check running after cat loop");
+              updateVotingList();
             });
         }
       });
   });
-
-exports.updateOpenToSort = functions.firestore
+exports.sortWinner = functions.firestore
   .document("Sync/Current")
   .onWrite((change, context) => {
-    console.log("updating Open to Sort");
-    db.collection("Sync")
-      .doc("Constants")
+    console.log("sorting Winner");
+    db.doc("Sync/Current")
       .get()
       .then((doc) => {
-        db.doc("Sync/Current")
-          .get()
-          .then((current) => {
-            const CompletedCycle = current.data().CompletedCycle;
+        if (doc.exists) {
+          const VoteCompletedCycle = doc.data().VoteCompletedCycle;
+          const collectionRef = db.collection(
+            `Submissions/AllSubmissions/${VoteCompletedCycle}`
+          );
+          console.log(VoteCompletedCycle);
+          collectionRef.get().then((snap) => {
+            console.log(snap.size);
 
-            db.doc("Sync/OpenToSort")
+            snap.forEach((submission) => {
+              const id = submission.data().user;
+              const wins = submission.data().wins;
+              const losses = submission.data().losses;
+              const winrate = wins / (wins + losses) || 0.5;
+              console.log("winrate: " + winrate);
+              const docRef = db.doc(
+                `Submissions/AllSubmissions/${VoteCompletedCycle}/${id}`
+              );
+              docRef.set(
+                {
+                  winrate: winrate,
+                },
+                { merge: true }
+              );
+            });
+            const WinnersPerCycle = 3;
+            collectionRef
+              .orderBy("winrate", "desc")
+              .limit(WinnersPerCycle)
               .get()
-              .then((document) => {
-                if (document.exists) {
-                  const OpenToSort = document.data().OpenToSort || [];
-                  if (!OpenToSort.includes(CompletedCycle)) {
-                    db.collection("Sync")
-                      .doc("OpenToSort")
-                      .set({
-                        OpenToSort: [...OpenToSort, CompletedCycle],
-                      });
-                  } else {
-                    console.log("already included");
-                  }
-                } else {
-                  db.collection("Sync")
-                    .doc("OpenToSort")
-                    .set({ OpenToSort: [CompletedCycle] });
-                }
+              .then((snap) => {
+                const winners = [];
+                snap.forEach((item) => {
+                  const winnerRef = `Submissions/AllSubmissions/${VoteCompletedCycle}/${item.id}`;
+                  db.doc(winnerRef)
+                    .get()
+                    .then((doc) => {
+                      if (doc.exists) {
+                        console.log(
+                          winnerRef + " from winners array in sort winners "
+                        );
+
+                        // make doc exist first to avoid query invis
+                        db.doc(`Winners/${VoteCompletedCycle}`)
+                          .set(
+                            {
+                              hi: "hello",
+                            },
+                            { merge: true }
+                          )
+                          .then(() => {
+                            db.doc(
+                              `Winners/${VoteCompletedCycle}/top3/${item.id}`
+                            ).set(doc.data());
+                          });
+                      }
+                    });
+                });
+
+                winners.forEach((ref) => {});
               });
           });
+        } else {
+          console.log("doc not found");
+        }
+      });
+  });
+exports.updateOpenToFame = functions.firestore
+  .document("Winners/{Cycle}")
+  .onWrite((change, context) => {
+    console.log("updating Open to Fame");
+    db.collection("Winners")
+      .get()
+      .then((snap) => {
+        const cycles = [];
+        snap.forEach((doc) => {
+          console.log(doc.id);
+          cycles.push(doc.id);
+        });
+        db.doc("Sync/OpenToFame").set({
+          OpenToFame: cycles,
+        });
+      });
+  });
+exports.indexWinners = functions.firestore
+  .document("Winners/{Cycle}")
+  .onWrite((change, context) => {
+    console.log("indexing the winners");
+    // get collection of cycles that have winners
+    db.collection("Winners")
+      .get()
+      .then((winners) => {
+        // winners is a collection
+        winners.forEach((cycle) => {
+          // each cycle is a document with a collection called top 3
+          db.collection(`Winners/${cycle.id}/top3`)
+            .get()
+            .then((top3) => {
+              // top3 is a collection with 3 document duplicates
+              const top3paths = []; // this array will be set as a document in with a cycle id in WinnerList collection
+              top3.forEach((doc) => {
+                // push path reference to the duplicates
+                top3paths.push(`Winners/${cycle.id}/top3/${doc.id}`);
+              });
+              // pushing the array to the winner list
+              db.doc(`Winners/${cycle.id}`).set(
+                {
+                  top3paths: top3paths,
+                },
+                { merge: true }
+              );
+            });
+        });
       });
   });

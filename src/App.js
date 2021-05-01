@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { auth } from "./firebase";
 import "./App.css";
 // remember to remove this
-import Admin from "./components/admin/Admin"
+import Admin from "./components/admin/Admin";
 
 import Challenges from "./components/challenges/Challenges";
 import Gallery from "./components/gallery/Gallery";
@@ -32,7 +32,7 @@ function App() {
     },
     {
       name: "My Gallery",
-      component: <MyGallery setSelected={setSelected} user={user}/>,
+      component: <MyGallery setSelected={setSelected} user={user} />,
       type: "account",
     },
     {
@@ -60,14 +60,13 @@ function App() {
         if (user) {
           console.log("from authStateChange in app.js");
           console.log(user.uid);
-          
         }
       } else {
         console.log("auth function no response");
         setUser(null);
       }
     });
-    setSelected("Home")
+    setSelected("Home");
   }, [user]);
 
   // component selection
@@ -82,16 +81,10 @@ function App() {
 
   return (
     <div className="App">
-      <Backdrop
-        user={user}
-        setSelected={setSelected}
-        selected={selected}
-
-      />
+      <Backdrop user={user} setSelected={setSelected} selected={selected} />
+      {display}
       <MainMenu setSelected={setSelected} menuItems={menuItems} user={user} />
       <Login setSelected={setSelected} selected={selected} />
-
-      {display}
     </div>
   );
 }

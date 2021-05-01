@@ -1,5 +1,5 @@
 import styled from "styled-components";
-
+import "./styles.css";
 // this 60 is the top:.. value from challenges.js
 const Height = ((window.innerHeight - 60) / 7) * 0.75;
 const ogHeight = 85;
@@ -21,15 +21,16 @@ const Pbox = styled.div`
 `;
 // Text box
 const Tbox = styled.div`
+  font-family: "Montserrat", sans-serif;
   left: 50px;
   color: #ffffff;
   padding-top: ${(ogHeight - fontsize - 9) / 2}px;
   text-transform: uppercase;
   padding-left: 15px;
   text-align: center;
-  font-family: Verdana, sans-serif;
+
   font-size: ${fontsize}px;
-  font-weight: 500;
+
   vertical-align: center;
   transition: 0.7s ease;
   /* border:1px black solid; */
@@ -84,4 +85,4 @@ const Card = styled.button`
   }
 `;
 
-export {Pbox,Tbox,Tbox2,Card};
+export { Pbox, Tbox, Tbox2, Card };

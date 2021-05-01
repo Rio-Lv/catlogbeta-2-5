@@ -68,6 +68,16 @@ const Box = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  @media (max-width: 800px) {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  }
+  @media (max-height: 640px) {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -47%);
+  }
 `;
 const Title = styled.div`
   transition: 0.5s ease;
@@ -97,17 +107,17 @@ function VoteBox(props) {
   }, [leftPath, rightPath]);
 
   const voteFunc = (path) => {
-    console.log("running vot function")
-    console.log("leftPath: " + leftPath)
-    console.log("rightPath: " +rightPath);
-    if(path===leftPath){
-      db.doc(leftPath).set({ wins: increment},{merge:true});
-      db.doc(rightPath).set({ losses: increment},{merge:true});
-    }else if(path===rightPath){
-      db.doc(leftPath).set({ losses: increment},{merge:true});
-      db.doc(rightPath).set({ wins: increment},{merge:true});
-    }else{
-      console.log("no path matches")
+    console.log("running vot function");
+    console.log("leftPath: " + leftPath);
+    console.log("rightPath: " + rightPath);
+    if (path === leftPath) {
+      db.doc(leftPath).set({ wins: increment }, { merge: true });
+      db.doc(rightPath).set({ losses: increment }, { merge: true });
+    } else if (path === rightPath) {
+      db.doc(leftPath).set({ losses: increment }, { merge: true });
+      db.doc(rightPath).set({ wins: increment }, { merge: true });
+    } else {
+      console.log("no path matches");
     }
   };
 
@@ -116,7 +126,7 @@ function VoteBox(props) {
       {window.innerWidth > 800 ? (
         <div>
           <Box>
-            <Title>{props.title}</Title>
+            <Title>{props.title.toUpperCase()}</Title>
             <SmallerBox>
               <ImageBox
                 path={leftPath}

@@ -108,6 +108,9 @@ function CloseUP(props) {
   const [url, setUrl] = useState("");
   const [title, setTitle] = useState("");
   const [hover, setHover] = useState(false);
+  useEffect(()=>{
+    setTimeout(()=>{setHover(true)},1500)
+  },[])
   useEffect(() => {
     if (props.reference !== "") {
       db.doc(props.reference)

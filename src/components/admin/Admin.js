@@ -6,9 +6,9 @@ import firebase from "firebase";
 const cyc = 109;
 
 const Button = styled.button`
-  margin: 5px;
-  height: 50px;
-  font-size: 24px;
+  margin: 3px;
+  height: 40px;
+  font-size: 20px;
   color: white;
   border: 3px solid black;
   background-color: black;
@@ -57,21 +57,27 @@ function Admin(props) {
       .then((doc) => {
         const NumActive = doc.data().NumActive;
         const CycleLength = doc.data().CycleLength;
-        const DurationLength = doc.data().DurationLength;
+        // const DurationLength = doc.data().DurationLength;
         const StartDate = doc.data().StartDate;
         const CurrentCycle = Math.floor((now - StartDate) / CycleLength) - 0;
-        const CompletedCycle = CurrentCycle - 2 * NumActive;
+        const VoteCompletedCycle = CurrentCycle - 2 * NumActive;
+        const SubmitCompletedCycle = CurrentCycle - NumActive;
+
+        const millisPerDay = 1000 * 60 * 60 * 24;
+        const millisPerWeek = millisPerDay * 7;
+        const CycleStart = CurrentCycle * millisPerDay + StartDate;
+        const CycleEnd = CycleStart + millisPerWeek;
 
         db.collection("Sync")
           .doc("Current")
           .set({
             ReadableIssueTime: date.toDateString(),
             Cycle: CurrentCycle,
-            CompletedCycle: CompletedCycle,
+            VoteCompletedCycle: VoteCompletedCycle,
+            SubmitCompletedCycle: SubmitCompletedCycle,
             Title: random,
-            Start: now,
-            End: now + DurationLength,
-
+            Start: CycleStart,
+            End: CycleEnd,
             CollectionPath: `/Submissions/AllSubmissions/Cycle_${CurrentCycle}`,
           });
       });
@@ -344,6 +350,76 @@ function Admin(props) {
               });
             });
         }
+      })
+      .then(() => {
+        console.log("this running after autoGenrateSubmissions has run");
+      });
+  };
+
+  const fixFreshToVote = () => {
+    db.doc("Template/Cats")
+      .get()
+      .then((doc) => {
+        if (doc.exists) {
+          const CatArray = doc.data().CatArray;
+
+          db.doc("Sync/Current")
+            .get()
+            .then((current) => {
+              const SubmitCompletedCycle = current.data().SubmitCompletedCycle;
+              console.log("Submit Completed Cycle: " + SubmitCompletedCycle);
+              db.collection(
+                `Submissions/AllSubmissions/${SubmitCompletedCycle}`
+              )
+                .get()
+                .then((snap) => {
+                  console.log(`cycle ${doc.id} : size ${snap.size}`);
+                  if (snap.size < 10) {
+                    //========
+                    db.collection("Challenges")
+                      .doc(`Cycle_${SubmitCompletedCycle}`)
+                      .get()
+                      .then((challenge) => {
+                        const title = challenge.data().Title;
+
+                        CatArray.forEach((url) => {
+                          const randomID = `TemplateID_${Math.floor(
+                            Math.random() * 1000
+                          )}`;
+
+                          console.log(randomID);
+                          console.log("adding these to submissions ");
+                          //=====
+                          db.collection(
+                            `Submissions/AllSubmissions/${SubmitCompletedCycle}`
+                          )
+                            .doc(randomID)
+                            .set(
+                              {
+                                cycle: SubmitCompletedCycle,
+                                displayName: randomID,
+                                losses: 0,
+                                title: title,
+                                url: url,
+                                urlSmall: url,
+                                user: randomID,
+                                winrate: 0.5,
+                                wins: 0,
+                              },
+                              { merge: true }
+                            );
+                        });
+                      });
+                  } else {
+                    console.log("no need to change, enough submissions");
+                  }
+                });
+            })
+            .then(() => {
+              console.log("check running after cat loop");
+              updateVotingList();
+            });
+        }
       });
   };
 
@@ -441,38 +517,19 @@ function Admin(props) {
       });
   };
 
-  const updateOpenToSort = () => {
-    console.log("updating Open to Sort");
-    db.collection("Sync")
-      .doc("Constants")
+  const updateOpenToFame = () => {
+    console.log("updating Open to Fame");
+    db.collection("Winners")
       .get()
-      .then((doc) => {
-        db.doc("Sync/Current")
-          .get()
-          .then((current) => {
-            const CompletedCycle = current.data().CompletedCycle;
-
-            db.doc("Sync/OpenToSort")
-              .get()
-              .then((document) => {
-                if (document.exists) {
-                  const OpenToSort = document.data().OpenToSort || [];
-                  if (!OpenToSort.includes(CompletedCycle)) {
-                    db.collection("Sync")
-                      .doc("OpenToSort")
-                      .set({
-                        OpenToSort: [...OpenToSort, CompletedCycle],
-                      });
-                  } else {
-                    console.log("already included");
-                  }
-                } else {
-                  db.collection("Sync")
-                    .doc("OpenToSort")
-                    .set({ OpenToSort: [CompletedCycle] });
-                }
-              });
-          });
+      .then((snap) => {
+        const cycles = [];
+        snap.forEach((doc) => {
+          console.log(doc.id);
+          cycles.push(doc.id);
+        });
+        db.doc("Sync/OpenToFame").set({
+          OpenToFame: cycles,
+        });
       });
   };
 
@@ -520,12 +577,11 @@ function Admin(props) {
       .get()
       .then((doc) => {
         if (doc.exists) {
-          const CompletedCycle = doc.data().CompletedCycle;
+          const VoteCompletedCycle = doc.data().VoteCompletedCycle;
           const collectionRef = db.collection(
-            `Submissions/AllSubmissions/${CompletedCycle}`
+            `Submissions/AllSubmissions/${VoteCompletedCycle}`
           );
-          console.log(CompletedCycle);
-
+          console.log(VoteCompletedCycle);
           collectionRef.get().then((snap) => {
             console.log(snap.size);
 
@@ -536,7 +592,7 @@ function Admin(props) {
               const winrate = wins / (wins + losses) || 0.5;
               console.log("winrate: " + winrate);
               const docRef = db.doc(
-                `Submissions/AllSubmissions/${CompletedCycle}/${id}`
+                `Submissions/AllSubmissions/${VoteCompletedCycle}/${id}`
               );
               docRef.set(
                 {
@@ -553,14 +609,29 @@ function Admin(props) {
               .then((snap) => {
                 const winners = [];
                 snap.forEach((item) => {
-                  const winnerRef = `Submissions/AllSubmissions/${CompletedCycle}/${item.id}`;
-                  winners.push(winnerRef);
-                  console.log(item.data().winrate);
+                  const winnerRef = `Submissions/AllSubmissions/${VoteCompletedCycle}/${item.id}`;
+                  db.doc(winnerRef)
+                    .get()
+                    .then((doc) => {
+                      if (doc.exists) {
+                        console.log(
+                          winnerRef + " from winners array in sort winners "
+                        );
+                        // make doc exist first to avoid query invis
+                        db.doc(`Winners/${VoteCompletedCycle}`)
+                          .set({
+                            hi: "hello",
+                          },{merge:true})
+                          .then(() => {
+                            db.doc(
+                              `Winners/${VoteCompletedCycle}/top3/${item.id}`
+                            ).set(doc.data());
+                          });
+                      }
+                    });
                 });
-                console.log(winners);
-                db.doc(`Winners/${CompletedCycle}`).set({
-                  References: winners,
-                });
+
+                winners.forEach((ref) => {});
               });
           });
         } else {
@@ -568,6 +639,82 @@ function Admin(props) {
         }
       });
   };
+
+  const indexCollection = () => {
+    db.collection("Winners/103/top3")
+      .get()
+      .then((snap) => {
+        // const references = [];
+
+        snap.forEach((doc) => {
+          console.log(doc.data());
+        });
+      });
+  };
+
+  const indexWinners = () => {
+    console.log("indexing the winners");
+    // get collection of cycles that have winners
+    db.collection("Winners")
+      .get()
+      .then((winners) => {
+        // winners is a collection
+        winners.forEach((cycle) => {
+          // each cycle is a document with a collection called top 3
+          db.collection(`Winners/${cycle.id}/top3`)
+            .get()
+            .then((top3) => {
+              // top3 is a collection with 3 document duplicates
+              const top3paths = []; // this array will be set as a document in with a cycle id in WinnerList collection
+              top3.forEach((doc) => {
+                // push path reference to the duplicates
+                top3paths.push(`Winners/${cycle.id}/top3/${doc.id}`);
+              });
+              // pushing the array to the winner list
+              db.doc(`Winners/${cycle.id}`).set(
+                {
+                  top3paths: top3paths,
+                },
+                { merge: true }
+              );
+            });
+        });
+      });
+  };
+
+  const resetTime = () => {
+    const timeFunc = (cycle) => {
+      const StartDate = 1609459200000;
+      const millisPerDay = 1000 * 60 * 60 * 24;
+      const millisPerWeek = millisPerDay * 7;
+      const CycleStart = cycle * millisPerDay + StartDate;
+      const CycleEnd = CycleStart + millisPerWeek;
+
+      // console.log("cycleStart: " + CycleStart)
+      // console.log("cyleEnd: "+ CycleEnd)
+      return { CycleStart, CycleEnd };
+    };
+    db.collection("Challenges")
+      .get()
+      .then((challenges) => {
+        challenges.forEach((challenge) => {
+          const cycle = challenge.data().Cycle;
+          console.log(cycle);
+          const cycleStart = timeFunc(cycle).CycleStart;
+          const cycleEnd = timeFunc(cycle).CycleEnd;
+          console.log("cycleStart: " + cycleStart);
+          console.log("cyleEnd: " + cycleEnd);
+          db.doc(`Challenges/Cycle_${cycle}`).set(
+            {
+              Start: cycleStart,
+              End: cycleEnd,
+            },
+            { merge: true }
+          );
+        });
+      });
+  };
+
   return (
     <div>
       {isAdmin ? (
@@ -581,8 +728,12 @@ function Admin(props) {
             transform: "translate(-50%,-50%)",
           }}
         >
+          <Button onClick={resetTime}>reset Time</Button>
+          <Button onClick={indexWinners}>Index Winners</Button>
+          <Button onClick={indexCollection}>Index Collection</Button>
+          <Button onClick={fixFreshToVote}>fixFreshToVote</Button>
           <Button onClick={sortWinner}>sort Winner</Button>
-          <Button onClick={updateOpenToSort}>updateOpenToSort</Button>
+          <Button onClick={updateOpenToFame}>updateOpenToFame</Button>
           <Button
             onClick={() => {
               GenerateSubmissionsForOne(103);
@@ -605,7 +756,7 @@ function Admin(props) {
           </Button>
           <Button onClick={uploadTemplateCats}>uploadTemplateCats</Button>
           <Button onClick={updateVotingList}>update Voting List</Button>
-          <Button>Update OpenToVote</Button>
+          <Button onClick={updateOpenToVote}>Update OpenToVote</Button>
           <Button>Update Challenges</Button>
           <Button onClick={updateChallengesCycleLength}>
             updateChallengesCycleLength

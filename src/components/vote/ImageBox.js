@@ -28,7 +28,7 @@ const Frame = styled.div`
   width: 500px;
   height: 0px;
   background-color: #363636;
-  background-size: contain;
+  background-size: cover;
   border: 3px solid #1a1a1a;
   margin: 4px;
   border-radius: 5px;
@@ -51,8 +51,8 @@ function ImageBox(props) {
   const [tint, setTint] = useState(0);
   const [isClicked, setIsClicked] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const [hover, setHover] = useState(true);
 
-  
   useEffect(() => {
     setTimeout(() => {
       setExpanded(true);
@@ -75,7 +75,9 @@ function ImageBox(props) {
       setTint(1);
     }
     setTimeout(() => {
+      
       setTint(1);
+
       if (path !== "") {
         //   console.log(path);
         db.doc(path)
@@ -83,14 +85,15 @@ function ImageBox(props) {
           .then((doc) => {
             if (doc.exists) {
               console.log(doc.data());
-              
+
               try {
                 // once url is set, wait for load before
+                setUrl("");
                 setTimeout(() => {
                   setUrl(doc.data().urlSmall);
                 }, 100);
                 setTimeout(() => {
-                  setTint(0);
+                  // setTint(0);
                   setIsClicked(false);
                 }, timerB);
               } catch (err) {
@@ -103,6 +106,16 @@ function ImageBox(props) {
       }
     }, timerA);
   }, [path]);
+
+  useEffect(() => {
+    console.log("url has changed");
+    if (url !== "") {
+      setTimeout(() => {
+        setTint(0);
+        setHover(true);
+      }, 300);
+    }
+  }, [url]);
 
   // hide display while image changes
 
@@ -146,16 +159,23 @@ function ImageBox(props) {
             transform: "translate(-3px,-207px)",
           }}
           onMouseLeave={() => {
-            setTint(0.5);
+            if (hover) {
+              setTint(0.5);
+            }
           }}
           onMouseEnter={() => {
-            setTint(0);
+            if (hover) {
+              setTint(0);
+            }
           }}
           onClick={() => {
-            checkfunc();
-            setIsClicked(true);
-            props.voteFunc(props.path)
-            props.shuffle();
+            if (hover) {
+              setHover(false);
+              checkfunc();
+              setIsClicked(true);
+              props.voteFunc(props.path);
+              props.shuffle();
+            }
           }}
         ></Glass>
       </Frame>
