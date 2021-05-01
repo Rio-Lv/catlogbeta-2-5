@@ -52,7 +52,7 @@ function ImageBox(props) {
   const [borderColor, setBorderColor] = useState("#000000");
 
   const [height, setHeight] = useState(0);
-  const [height2, setHeight2] = useState(70)
+  const [height2, setHeight2] = useState(40)
   const [opacity, setOpacity] = useState(0);
 
   const { R, G, B } = getRGBcore(timeleft); // for some reason, offsetting the time left fixes the color sync with challenges

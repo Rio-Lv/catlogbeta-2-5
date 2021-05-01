@@ -18,7 +18,7 @@ const Box = styled.div`
     width: 99%;
     top: 65px;
     transform: translate(-50%, -3%);
-    border: 2px solid #000000;
+    /* border: 2px solid #000000; */
     border-radius: 5px;
     display:block;
   }

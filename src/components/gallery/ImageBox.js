@@ -44,7 +44,7 @@ function ImageBox(props) {
   const [width, setWidth] = useState(0);
 
   const [topThickness, setTopThickeness] = useState(5);
-  const [sideThickness, setSideThickness] = useState(150);
+  const [sideThickness, setSideThickness] = useState(155);
   const [borderColor, setBorderColor] = useState("black");
   const [hover, setHover] = useState(false);
 

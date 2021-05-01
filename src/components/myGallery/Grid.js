@@ -2,21 +2,21 @@ import React, { useEffect, useState } from "react";
 import { Box, Row } from "./styles";
 import FadeIn from "react-fade-in";
 import ImageBox from "./ImageBox";
-import CloseUp from "./closeUp/CloseUp"
+import CloseUp from "./closeUp/CloseUp";
 
 function Grid(props) {
   // props from MyGallery
   const [N, setN] = useState(3);
   const [boxes, setBoxes] = useState([]);
-  const [closeUp,setCloseUp] = useState(false);
+  const [closeUp, setCloseUp] = useState(false);
   const [reference, setReference] = useState("");
-  
+
   useEffect(() => {
     if (reference !== "") {
       setCloseUp(true);
-      console.log(reference)
-    }else{
-      setCloseUp(false)
+      console.log(reference);
+    } else {
+      setCloseUp(false);
     }
   }, [reference]);
 
@@ -46,11 +46,26 @@ function Grid(props) {
       }
     }
     setBoxes(array);
-  }, [props.references,N]);
+  }, [props.references, N]);
+  useEffect(()=>{
+    const center = document.getElementById("MyGalleryCenter").style
+    if(window.innerWidth>700){
+
+      center.transform = "translate(0,130px)"
+      setTimeout(()=>{
+        center.transform = "translate(0,20px)"
+      },1500)
+    }else{
+      center.top = "130px"
+      setTimeout(()=>{
+        center.top = "0px"
+      },1500)
+    }
+  },[])
   return (
     <div>
       {closeUp ? (
-        <CloseUp reference = {reference} setReference={setReference}></CloseUp>
+        <CloseUp reference={reference} setReference={setReference}></CloseUp>
       ) : (
         <div>
           <Box
@@ -60,7 +75,9 @@ function Grid(props) {
             }}
           ></Box>
           <Box>
-            <FadeIn>{boxes}</FadeIn>
+            <div style={{position:window.innerWidth<700?"fixed":"static",transition:".8s ease"}}id="MyGalleryCenter">
+              <FadeIn>{boxes}</FadeIn>
+            </div>
           </Box>
         </div>
       )}

@@ -42,7 +42,7 @@ function ImageRow(props) {
   const [third, setThird] = useState("");
 
   const [title, setTitle] = useState("");
-  const [expanded, setExpanded] = useState(true);
+  const [expanded, setExpanded] = useState(window.innerWidth>700?true:false);
 
   useEffect(() => {
     db.doc(`Winners/${props.cycle}`)

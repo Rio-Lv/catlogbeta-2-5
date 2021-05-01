@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import {db} from "../../firebase"
 import Styled from "styled-components";
 
 const Image = Styled.img`
@@ -16,8 +17,32 @@ const Image = Styled.img`
 
 function Backdrop(props) {
   const [size, setSize] = useState(window.innerWidth);
+  const [url, setUrl] = useState("https://i.pinimg.com/originals/a8/57/57/a8575717e6163a5b978606448671dee9.png");
 
-  const url = "https://i.pinimg.com/originals/a8/57/57/a8575717e6163a5b978606448671dee9.png";
+  useEffect(()=>{
+    db.doc("Sync/Current").onSnapshot(doc=>{
+      if(doc.exists){
+        const cycle = doc.data().VoteCompletedCycle
+        console.log(cycle)
+        db.doc(`Winners/${cycle}`).get().then(document=>{
+          if(document.exists){
+            const path = document.data().top3paths[0]
+            console.log(path)
+            if(!path.includes("TemplateID"))
+            db.doc(path).get().then(winner=>{
+              if(winner.exists){
+                const winnerURL = winner.data().url
+                console.log(winnerURL)
+                setUrl(winnerURL)
+              }
+            })
+          }
+        })
+      }
+    })
+  },[])
+
+
 
   const sizeImage = () => {
     if (window.innerWidth > 600) {

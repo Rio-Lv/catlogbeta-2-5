@@ -2,10 +2,8 @@ import React, { useState, useEffect } from "react";
 import { db } from "../../firebase";
 import Grid from "./Grid";
 import styled from "styled-components";
+import Title from "./Title";
 
-const Title = styled.div`
-
-`
 var collator = new Intl.Collator(String, {
   numeric: true,
   sensitivity: "base",
@@ -18,10 +16,9 @@ function MyGallery(props) {
       .doc(props.user.uid)
       .onSnapshot((snap) => {
         if (snap.exists) {
-          try{
-
+          try {
             setReferences(snap.data().references.sort());
-  
+
             references.forEach((reference) => {
               var current;
               reference.get().then((doc) => {
@@ -32,11 +29,11 @@ function MyGallery(props) {
                   console.log("doc not found");
                 }
               });
-  
+
               console.log(current);
             });
-          }catch{
-            console.log("empty")
+          } catch {
+            console.log("empty");
           }
         }
       });
@@ -44,6 +41,8 @@ function MyGallery(props) {
   return (
     <div>
       <Grid references={references.sort(collator.compare)}></Grid>
+
+      <Title></Title>
     </div>
   );
 }

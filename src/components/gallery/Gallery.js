@@ -18,7 +18,7 @@ const InvisibleBox = styled.div`
   @media (max-width: 800px) {
     width: 110%;
     transform: translate(-50%, 0px);
-    height: ${window.innerHeight}px;
+    height: ${window.innerHeight+100}px;
   }
 `;
 
@@ -58,11 +58,11 @@ const Title = styled.div`
   transition: 1s ease;
 
   background-color: #111111;
-  border-radius: 3px;
+  /* border-radius: 3px; */
   /* border: 3px solid #000000; */
   @media (max-width: 800px) {
     top: 50px;
-    width: 98%;
+    width: 100%;
   }
 `;
 
@@ -136,7 +136,7 @@ function Gallery() {
         title.lineHeight = "42px";
 
         setTimeout(() => {
-          center.top = "-99px";
+          center.top = "-95px";
         }, 500);
       }
     }, 1000);
