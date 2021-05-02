@@ -35,8 +35,8 @@ const CenterBox = styled.div`
   border-radius: 5px;
   /* border: 3px solid red; */
   @media (max-width: 800px) {
-    left: 50%;
-    transform: translate(-48.5%, 135px);
+    left: ${(window.innerWidth+38)/2}px;
+    transform: translate(-50%, 135px);
     position:absolute;
   }
 
@@ -52,9 +52,9 @@ const Title = styled.div`
   transform: translate(-50%, 0);
   line-height: 87px;
   height: 80px;
-  color: #f4faff;
+  color: #ffffff;
   font-size: 64px;
-
+  border: 1px solid transparent;
   transition: 1s ease;
 
   background-color: #111111;
@@ -62,7 +62,10 @@ const Title = styled.div`
   /* border: 3px solid #000000; */
   @media (max-width: 800px) {
     top: 50px;
-    width: 100%;
+    width: 101%;
+  }
+  &:hover{
+    color: #ff9c2a
   }
 `;
 
@@ -71,7 +74,7 @@ function Gallery() {
   const [rows, setRows] = useState();
   useEffect(() => {
     db.doc("Sync/OpenToFame").onSnapshot((doc) => {
-      if (doc.exists) {
+      if (doc.exists) { 
         setCycles(doc.data().OpenToFame);
         // console.log(doc.data())
       } else {
@@ -102,12 +105,12 @@ function Gallery() {
         title.borderBottomLeftRadius = "35px";
         title.borderBottomRightRadius = "35px";
         title.fontWeight = "800";
-
+        title.border = "1px solid black"
         title.top = "-1px";
-        title.width = "400px";
+        title.width = "340px";
         title.color = "black";
         title.border = "3px solid transparent";
-        title.backgroundColor = "#fff8f2";
+        title.backgroundColor = "#ffffff";
         title.fontSize = "48px";
         title.height = "60px";
         title.lineHeight = "62px";
@@ -120,7 +123,7 @@ function Gallery() {
         title.left = "150px";
         title.width = `${window.innerWidth - 170}px `;
         title.width = "600px";
-        title.border = "3px solid white";
+        title.border = "3px solid #000000";
         title.borderTopRightRadius = "10px";
         title.borderTopLeftRadius = "10px";
         title.borderBottomLeftRadius = "10px";
@@ -128,10 +131,10 @@ function Gallery() {
 
         title.top = "0px";
 
-        title.color = "black";
-        title.backgroundColor = "#ffffff";
+        title.color = "#ffffff";
+        title.backgroundColor = "#111111";
         title.fontSize = "24px";
-        title.fontWeight = "800";
+        title.fontWeight = "500";
         title.height = "36px";
         title.lineHeight = "42px";
 

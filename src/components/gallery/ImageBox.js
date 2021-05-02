@@ -21,13 +21,13 @@ const Name = styled.div`
   transition: 0.9s ease;
 `;
 const Frame = styled.div`
-  width: 250px;
-  height: 250px;
+  width: 280px;
+  height: 280px;
   background-color: black;
   background-size: cover;
-  margin: 3px;
+  margin: 2px;
   background-size: cover;
-  border-radius: 2px;
+  border-radius: 6px;
   transition: .3s ease;
   &:hover ${Name} {
     opacity: 1;
@@ -51,14 +51,14 @@ function ImageBox(props) {
   useEffect(() => {
     setTimeout(() => {
       if (window.innerWidth > 700) {
-        setTopThickeness(150);
-        setSideThickness(150);
+        setTopThickeness(155);
+        setSideThickness(155);
 
         setTimeout(() => {
-          setWidth(250);
-          setHeight(250);
-          setTopThickeness(30);
-          setSideThickness(30);
+          setWidth(280);
+          setHeight(280);
+          setTopThickeness(15);
+          setSideThickness(15);
           setHover(true);
         }, 600);
       } else {
@@ -66,10 +66,10 @@ function ImageBox(props) {
         // setTopThickeness((window.innerWidth - 24) / 2 );
         // setSideThickness((window.innerWidth - 24) / 2 );
         setTimeout(() => {
-          setWidth(250);
-          setHeight(250);
-          setTopThickeness(30);
-          setSideThickness(30);
+          setWidth(280);
+          setHeight(280);
+          setTopThickeness(15);
+          setSideThickness(15);
           setHover(true);
         }, 600);
       }
@@ -99,13 +99,13 @@ function ImageBox(props) {
             if (window.innerWidth > 700) {
               setHeight(300);
               setWidth(300);
-              setBorderColor("#44abff");
+              setBorderColor("#ffaa3b");
               setTopThickeness(5);
               setSideThickness(5);
             } else {
               setHeight(300);
               setWidth(300);
-              setBorderColor("#44abff");
+              setBorderColor("#ffb451");
               setTopThickeness(5);
               setSideThickness(5);
             }
@@ -114,18 +114,18 @@ function ImageBox(props) {
         onMouseLeave={() => {
           if (hover) {
             if (window.innerWidth > 700) {
-              setHeight(250);
-              setWidth(250);
+              setHeight(280);
+              setWidth(280);
               setBorderColor("black");
-              setTopThickeness(30);
-              setSideThickness(30);
+              setTopThickeness(15);
+              setSideThickness(15);
             } else {
-              setWidth(250);
-              setHeight(250);
+              setWidth(280);
+              setHeight(280);
 
               setBorderColor("black");
-              setTopThickeness(30);
-              setSideThickness(30);
+              setTopThickeness(15);
+              setSideThickness(15);
             }
           }
         }}

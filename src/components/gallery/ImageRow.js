@@ -16,9 +16,9 @@ const RowBox = styled.div`
   
   display: flex;
   flex-direction: column;
-  background-color: #1a1a1a;
-  border-radius: 3px;
-  border: 3px solid #000000;
+  background-color: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #1f1f1f;
   text-align: center;
   margin-top: 5px;
   margin-left: 0px;
@@ -30,9 +30,10 @@ const Title = styled.div`
   font-family: "Montserrat", sans-serif;
   margin-bottom: 3px;
   font-size: 26px;
+  font-weight:600;
   line-height: 32px;
   height: 30px;
-  color: #fdfdfd;
+  color: #303030;
   width: 100%;
   /* background-color: #000000; */
 `;

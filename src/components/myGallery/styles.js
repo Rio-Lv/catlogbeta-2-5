@@ -1,11 +1,11 @@
 import styled from "styled-components";
 const Box = styled.div`
-  display:none;
+  display: none;
   left: 50%;
   position: fixed;
   height: 95%;
-  transform: translate(-50%, 0);
-  top: 55px;
+  transform: translate(-50%, 10px);
+  top: 50px;
   display: flex;
   flex-direction: column;
 
@@ -20,7 +20,7 @@ const Box = styled.div`
     transform: translate(-50%, -3%);
     /* border: 2px solid #000000; */
     border-radius: 5px;
-    display:block;
+    display: block;
   }
 `;
 
@@ -31,14 +31,13 @@ const Row = styled.div`
   display: flex;
   /* border: 3px solid blue; */
   margin-right: 10px;
-
-  transform: translate(1.5%, 0);
+  transform: translate(1.5%, 0%);
 
   @media (max-width: 600px) {
     width: auto;
     flex-direction: column;
     /* position: relative; */
-    transform: translate(3.3%, 0);
+    transform: translate(3px, 0);
   }
 `;
 

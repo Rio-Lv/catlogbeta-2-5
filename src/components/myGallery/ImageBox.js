@@ -9,7 +9,7 @@ const Box = styled.div`
   width: ${imageWidth}px;
   height: ${imageWidth + 34}px;
   margin: ${pad}px;
-  border-radius: 5px;
+  border-radius: 4px;
   background-repeat: no-repeat;
   background-size: cover;
   transition: 0.5s ease;
@@ -25,16 +25,20 @@ const Box = styled.div`
 `;
 
 const Text = styled.div`
+  height: 30px;
   background-color: #1a1a1a;
   position: relative;
   left: 0px;
+  width: 100%;
   /* top: 300px; */
   padding-bottom: 4px;
+  font-family: "Montserrat", sans-serif;
   font-size: 20px;
   text-align: center;
-  line-height: 30px;
-  border-bottom-left-radius: 3px;
-  border-bottom-right-radius: 3px;
+  font-weight: 500;
+  line-height: 36px;
+  border-bottom-left-radius: 2px;
+  border-bottom-right-radius: 2px;
   transition: 0.6s ease;
 `;
 
@@ -47,13 +51,17 @@ function ImageBox(props) {
 
   const [base, setBase] = useState(50);
   const [W, setW] = useState(1);
+  const [WB, setWB] = useState(1);
 
-  const [color, setColor] = useState("#ffd6a0");
-  const [borderColor, setBorderColor] = useState("#000000");
+  const [color, setColor] = useState("#000000");
+  const [borderColor, setBorderColor] = useState("#ffffff");
+  const [background, setBackground] = useState("white");
 
   const [height, setHeight] = useState(0);
-  const [height2, setHeight2] = useState(40)
+  const [height2, setHeight2] = useState(30);
   const [opacity, setOpacity] = useState(0);
+
+  const [hoverable, setHoverable] = useState(false);
 
   const { R, G, B } = getRGBcore(timeleft); // for some reason, offsetting the time left fixes the color sync with challenges
 
@@ -61,10 +69,15 @@ function ImageBox(props) {
   useEffect(() => {
     setTimeout(() => {
       setHeight(imageWidth);
-      setHeight2(imageWidth)
+      setHeight2(imageWidth);
       setTimeout(() => {
         setOpacity(1);
-      }, 500+timeleft*1000);
+        setTimeout(() => {
+          setW(10);
+          setWB(0);
+          setHoverable(true);
+        }, 1200);
+      }, 500 + timeleft * 1000);
     }, 1000);
   }, []);
   useEffect(() => {
@@ -100,20 +113,26 @@ function ImageBox(props) {
         height: `${height2 + 34}px `,
         border:
           timeleft > 0
-            ? `3px solid rgba(${R * W}, ${G * W}, ${B * W}`
-            : `3px solid${borderColor}`,
+            ? `4px solid rgba(${R * WB}, ${G * WB}, ${B * WB}`
+            : `4px solid${borderColor}`,
       }}
       onMouseEnter={() => {
-        setBorderColor("#ff8800");
-        setColor("#ff8800");
-        setBase(0);
-        setW(1.5);
+        if (hoverable) {
+          setBorderColor("#ff8800");
+          setColor("#ff8800");
+          setBase(0);
+          setW(1.5);
+          setWB(1.5);
+        }
       }}
       onMouseLeave={() => {
-        setBorderColor("#000000");
-        setColor("#ffd6a0");
-        setBase(50);
-        setW(0.7);
+        if (hoverable) {
+          setBorderColor("#ffffff");
+          setColor("#000000");
+          setBase(50);
+          setW(100);
+          setWB(0);
+        }
       }}
       onClick={() => {
         console.log("imageBox clicked");
@@ -129,8 +148,8 @@ function ImageBox(props) {
             position: "fixed",
             height: `${imageWidth}px`,
             width: `${imageWidth}px`,
-            borderTopRightRadius: "3px",
-            borderTopLeftRadius: "3px",
+            borderTopRightRadius: "1px",
+            borderTopLeftRadius: "1px",
             transition: "0.4s ease",
           }}
           src={url}
@@ -145,6 +164,10 @@ function ImageBox(props) {
             timeleft > 0
               ? `rgba(${R * W + base}, ${G * W + base}, ${B * W + base}`
               : color,
+          backgroundColor: timeleft > 0 ? "#1a1a1a" : background,
+          left: timeleft > 0 ? "0px" : "-1px",
+          width: timeleft > 0 ? "100%" : "100.7%",
+          fontWeight: timeleft > 0 ? "400" : "700",
         }}
       >
         {title.toUpperCase()}

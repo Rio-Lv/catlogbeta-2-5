@@ -41,7 +41,6 @@ function MyGallery(props) {
   return (
     <div>
       <Grid references={references.sort(collator.compare)}></Grid>
-
       <Title></Title>
     </div>
   );

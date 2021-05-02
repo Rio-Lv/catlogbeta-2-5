@@ -47,39 +47,41 @@ function Grid(props) {
     }
     setBoxes(array);
   }, [props.references, N]);
-  useEffect(()=>{
-    const center = document.getElementById("MyGalleryCenter").style
-    if(window.innerWidth>700){
+  useEffect(() => {
+    const center = document.getElementById("MyGalleryCenter").style;
 
-      center.transform = "translate(0,130px)"
-      setTimeout(()=>{
-        center.transform = "translate(0,20px)"
-      },1500)
-    }else{
-      center.top = "130px"
-      setTimeout(()=>{
-        center.top = "0px"
-      },1500)
+    if (window.innerWidth > 700) {
+      center.transform = "translate(0,117px)";
+      setTimeout(() => {
+        center.transform = "translate(0,25px)";
+      }, 1500);
+    } else {
+      center.top = "70px";
+      setTimeout(() => {
+        center.top = "0px";
+      }, 1500);
     }
-  },[])
+  }, []);
   return (
     <div>
       {closeUp ? (
         <CloseUp reference={reference} setReference={setReference}></CloseUp>
       ) : (
-        <div>
-          <Box
+        <Box>
+          <div
             style={{
-              backgroundColor: "black",
-              opacity: window.innerWidth > 700 ? "0%" : "35%",
+              transform:
+                window.innerWidth > 700
+                  ? "translate(0,190px)"
+                  : "translate(0,5px)",
+              position: window.innerWidth < 700 ? "fixed" : "static",
+              transition: ".8s ease",
             }}
-          ></Box>
-          <Box>
-            <div style={{position:window.innerWidth<700?"fixed":"static",transition:".8s ease"}}id="MyGalleryCenter">
-              <FadeIn>{boxes}</FadeIn>
-            </div>
-          </Box>
-        </div>
+            id="MyGalleryCenter"
+          >
+            <FadeIn>{boxes}</FadeIn>
+          </div>
+        </Box>
       )}
     </div>
   );
