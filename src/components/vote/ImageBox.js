@@ -12,7 +12,7 @@ const Glass = styled.div`
   border: 3px solid transparent;
 
   border-radius: 5px;
-  transition: 0.3s ease;
+  transition: 1s ease;
   &:hover {
     opacity: 0;
   }
@@ -32,7 +32,7 @@ const Frame = styled.div`
   border: 3px solid #1a1a1a;
   margin: 4px;
   border-radius: 5px;
-  transition: 0.3s ease;
+  transition: 1s ease;
   @media (max-width: 800px) {
     width: ${window.innerHeight * 0.4}px;
     height: ${window.innerHeight * 0.4}px;
@@ -53,10 +53,17 @@ function ImageBox(props) {
   const [expanded, setExpanded] = useState(false);
   const [hover, setHover] = useState(true);
 
+  const [speed,setSpeed] = useState(1);
+  const [loaded,setLoaded] = useState(false)
+
   useEffect(() => {
     setTimeout(() => {
       setExpanded(true);
-    }, 900);
+      setTimeout(()=>{
+        setLoaded(true)
+        setSpeed(.3)
+      },1200)
+    }, 1400);
   }, []);
 
   useEffect(() => {
@@ -131,6 +138,7 @@ function ImageBox(props) {
       <Frame
         className="frame"
         style={{
+          transition:`${speed}s ease`,
           backgroundImage: `url(${url})`,
           height: expanded
             ? `${window.innerWidth > 700 ? 500 : window.innerHeight * 0.4}px`
@@ -151,10 +159,11 @@ function ImageBox(props) {
         ></CheckIcon>
         <Glass
           style={{
+            transition:`${speed}s ease`,
             height: expanded
               ? `${window.innerWidth > 700 ? 500 : window.innerHeight * 0.4}px`
               : `${0}px`,
-            opacity: `${tint}`,
+            opacity: loaded?`${tint}`:"1",
             position: "relative",
             transform: "translate(-3px,-207px)",
           }}

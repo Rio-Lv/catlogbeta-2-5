@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import VoteBox from "./VoteBox";
 import { db } from "../../firebase";
+import Title from "./Title";
 const random = (num) => {
   return Math.floor(Math.random() * num);
 };
@@ -12,8 +13,7 @@ function Vote() {
   const [OpenToVote, setOpenToVote] = useState(null);
   const [docReads, setDocReads] = useState(0);
 
-  const [title,setTitle] = useState("");
-
+  const [title, setTitle] = useState("");
 
   const increaseDocRead = () => {
     setDocReads(docReads + 1);
@@ -29,43 +29,43 @@ function Vote() {
 
   const shuffle = () => {
     // console.log("open to vote " + OpenToVote);
-    console.log("shuffling")
+    console.log("shuffling");
     if (OpenToVote !== null) {
-      console.log("shuffling")
+      console.log("shuffling");
       var cycle = OpenToVote[random(OpenToVote.length)];
-      console.log(cycle)
-      db.doc(`Challenges/Cycle_${cycle}`).get().then(doc=>{
-        setTitle(doc.data().Title)
-      })
-      if(cycle===Cycle){
-        cycle = OpenToVote[random(OpenToVote.length)]
+      console.log(cycle);
+      db.doc(`Challenges/Cycle_${cycle}`)
+        .get()
+        .then((doc) => {
+          setTitle(doc.data().Title);
+        });
+      if (cycle === Cycle) {
+        cycle = OpenToVote[random(OpenToVote.length)];
       }
       setCycle(cycle);
 
       db.doc(`VotingList/${cycle}`).onSnapshot((doc) => {
         // console.log("docRead");
         increaseDocRead();
-        
+
         if (doc.exists) {
           // console.log("data from Voting list cycle :" + cycle);
           // console.log(doc.data().List);
           const listSize = doc.data().List.length;
           // console.log("list size is : " + listSize);
           if (listSize > 1) {
-            const random1 = random(listSize)
-            var random2 = random(listSize)
-            while(random1===random2){
-              random2 =random(listSize)
+            const random1 = random(listSize);
+            var random2 = random(listSize);
+            while (random1 === random2) {
+              random2 = random(listSize);
             }
-            if(random1!==random2){
+            if (random1 !== random2) {
               setDocNameLeft(doc.data().List[random1]);
               setDocNameRight(doc.data().List[random2]);
-              
             }
-
           } else {
             console.log("list size too small");
-            cycle = OpenToVote[random(OpenToVote.length)]
+            cycle = OpenToVote[random(OpenToVote.length)];
           }
         }
       });
@@ -80,7 +80,7 @@ function Vote() {
   return (
     <div>
       <VoteBox
-        title = {title}
+        title={title}
         LeftPath={
           docNameLeft !== ""
             ? `Submissions/AllSubmissions/${Cycle}/${docNameLeft}`
@@ -92,8 +92,9 @@ function Vote() {
             : ""
         }
         shuffle={shuffle}
-        increaseDocRead = {increaseDocRead}
+        increaseDocRead={increaseDocRead}
       ></VoteBox>
+      <Title></Title>
     </div>
   );
 }

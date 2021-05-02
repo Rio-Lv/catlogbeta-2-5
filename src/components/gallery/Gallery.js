@@ -4,6 +4,50 @@ import styled from "styled-components";
 import ImageRow from "./ImageRow";
 import FadeIn from "react-fade-in";
 import "./styles.css";
+const BackBox = styled.div`
+  left: 50%;
+  position: fixed;
+  height: 100%;
+  transform: translate(-50%, 0);
+  top: 0px;
+  display: flex;
+  flex-direction: column;
+  /* background-color: #6d6d6d; */
+  overflow: scroll;
+  @media (max-width: 600px) {
+    display: block;
+    height: 110%;
+    width: 99%;
+    top: 0px;
+    transform: translate(-50%, -3%);
+    border: 2px solid #000000;
+    border-radius: 5px;
+    transition: 1s ease;
+  }
+`;
+const BackBoxShade = styled.div`
+  left: 50%;
+  position: fixed;
+  height: 100%;
+  transform: translate(-50%, 0);
+  top: 0px;
+  display: flex;
+  flex-direction: column;
+  /* background-color: #6d6d6d; */
+  overflow: scroll;
+  background-color: black;
+  opacity: 30%;
+  @media (max-width: 600px) {
+    display: block;
+    height: 110%;
+    width: 99%;
+    top: 0px;
+    transform: translate(-50%, -3%);
+    border: 2px solid #000000;
+    border-radius: 5px;
+    transition: 1s ease;
+  }
+`;
 
 const InvisibleBox = styled.div`
   position: fixed;
@@ -146,6 +190,8 @@ function Gallery() {
   }, []);
   return (
     <div>
+      <BackBox></BackBox>
+      <BackBoxShade></BackBoxShade>
       <InvisibleBox id="HallOfFameInvisible">
         <CenterBox id="HallOfFameCenter">
           <div>
