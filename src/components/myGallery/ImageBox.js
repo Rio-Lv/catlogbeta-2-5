@@ -113,8 +113,8 @@ function ImageBox(props) {
         height: `${height2 + 34}px `,
         border:
           timeleft > 0
-            ? `4px solid rgba(${R * WB}, ${G * WB}, ${B * WB}`
-            : `4px solid${borderColor}`,
+            ? `3px solid rgba(${R * WB}, ${G * WB}, ${B * WB}`
+            : `3px solid${borderColor}`,
       }}
       onMouseEnter={() => {
         if (hoverable) {

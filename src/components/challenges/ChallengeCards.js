@@ -28,7 +28,7 @@ function ChallengeCards(props) {
     setCards(array);
   }, [props]);
 
-  return <div>{cards}</div>;
+  return <div >{cards}</div>;
 }
 
 export default ChallengeCards;

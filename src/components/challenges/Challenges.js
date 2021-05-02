@@ -5,12 +5,13 @@ import FadeIn from "react-fade-in";
 import ChallengeCards from "./ChallengeCards";
 import Upload from "./upload/Upload";
 import { db } from "../../firebase";
+import Title from "./Title";
 
 const Box = styled.div`
   left: 50%;
   position: fixed;
-  height: 95%;
-  transform: translate(-50%, 0);
+  height: 100%;
+  transform: translate(0%, 0);
   top: 70px;
   display: flex;
   flex-direction: column;
@@ -50,6 +51,8 @@ function Challenges(props) {
   const [reference, setReference] = useState("");
   const [references, setReferences] = useState([]);
 
+  const [titleboxHeight, setTitleBoxHeight] = useState(0);
+
   useEffect(() => {
     db.doc("Sync/OpenToSubmit").onSnapshot((doc) => {
       if (doc.exists) {
@@ -65,24 +68,23 @@ function Challenges(props) {
       setUpload(false);
     } else {
       console.log("setting upload to true");
-      db.doc(reference)
-        .onSnapshot((doc) => {
-          if (doc.exists) {
-            // console.log(doc.data());
-            const title = doc.data().Title;
-            const collectionPath = doc.data().CollectionPath;
-            const cycle = doc.data().Cycle;
-            const end = doc.data().End
-            const cycleLength = doc.data().CycleLength
-            setItem({
-              title: title,
-              end: end,
-              collectionPath: collectionPath,
-              cycle: cycle,
-              cycleLength :cycleLength
-            });
-          }
-        });
+      db.doc(reference).onSnapshot((doc) => {
+        if (doc.exists) {
+          // console.log(doc.data());
+          const title = doc.data().Title;
+          const collectionPath = doc.data().CollectionPath;
+          const cycle = doc.data().Cycle;
+          const end = doc.data().End;
+          const cycleLength = doc.data().CycleLength;
+          setItem({
+            title: title,
+            end: end,
+            collectionPath: collectionPath,
+            cycle: cycle,
+            cycleLength: cycleLength,
+          });
+        }
+      });
     }
   }, [reference]);
 
@@ -94,10 +96,20 @@ function Challenges(props) {
 
   return (
     <div>
-      <Box style={{ 
-        backgroundColor: "black", 
-        opacity: window.innerWidth>700?"0%":"35%" }}></Box>
-      <Box />
+      <Box
+        style={{
+          backgroundColor: "black",
+          height: "120%",
+          top: "0px",
+          opacity: window.innerWidth > 700 ? "0%" : "35%",
+        }}
+      ></Box>
+      <Box
+        style={{
+          height: "120%",
+          top: "0px",
+        }}
+      />
       <TitleBox>
         {upload ? (
           <Upload
@@ -109,15 +121,14 @@ function Challenges(props) {
             setSelected={props.setSelected}
           ></Upload>
         ) : (
-          <FadeIn>
-            <ChallengeCards
-              setUpload={setUpload}
-              references={references}
-              setReference={setReference}
-            ></ChallengeCards>
-          </FadeIn>
+          <ChallengeCards
+            setUpload={setUpload}
+            references={references}
+            setReference={setReference}
+          ></ChallengeCards>
         )}
       </TitleBox>
+      <Title></Title>
     </div>
   );
 }

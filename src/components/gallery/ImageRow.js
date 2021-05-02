@@ -67,7 +67,7 @@ function ImageRow(props) {
 
   return (
     <div>
-      <RowBox>
+      <RowBox style ={{border:window.innerWidth>700?"2px solid black":"1px solid transparent"}}>
         <Title
           
           onClick={() => {
@@ -84,7 +84,8 @@ function ImageRow(props) {
         <Row >
           <ImageBox reference={first} ></ImageBox>
           {expanded ? (
-            <div style = {{display:"flex",flexDirection:window.innerWidth>700?"horizontal":"column"}}>
+            <div style = {{display:"flex",flexDirection:window.innerWidth>700?
+            "horizontal":"column"}}>
               <ImageBox reference={second}></ImageBox>
               <ImageBox reference={third}></ImageBox>
             </div>

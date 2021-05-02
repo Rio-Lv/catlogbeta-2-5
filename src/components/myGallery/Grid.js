@@ -69,7 +69,7 @@ function Grid(props) {
       ) : (
         <Box
           style={{
-            // border: "3px solid blue",
+            border:window.innerWidth<700? "3px solid #000000":"0px solid transparent",
             top: "-10px",
             height: "105%",
           }}
