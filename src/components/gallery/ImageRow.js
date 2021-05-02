@@ -24,6 +24,9 @@ const RowBox = styled.div`
   margin-left: 0px;
   margin-right: 0px;
   padding: 3px;
+  @media(max-width:700px){
+    border-radius: 6px;
+  }
 `;
 
 const Title = styled.div`

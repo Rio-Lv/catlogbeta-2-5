@@ -34,6 +34,7 @@ const Frame = styled.div`
   }
   @media (max-width: 800px) {
     transform: translate(${0}px, 0%);
+    
   }
 `;
 

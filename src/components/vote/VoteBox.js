@@ -18,12 +18,12 @@ const BackBox = styled.div`
   overflow: scroll;
   @media (max-width: 600px) {
     display: block;
-    height: 98%;
+    height: 110%;
     width: 99%;
-    top: 65px;
+    top: 0px;
     transform: translate(-50%, -3%);
     border: 2px solid #000000;
-    border-radius: 5px;
+    border-radius: 0px;
     transition: 1s ease;
   }
 `;
@@ -39,11 +39,11 @@ const BackBoxShade = styled.div`
   overflow: scroll;
   background-color: black;
   opacity: 30%;
-  @media (max-width: 600px) {
+  @media (max-width: 700px) {
     display: block;
-    height: 98%;
+    height: 110%;
     width: 99%;
-    top: 65px;
+    top: 0px;
     transform: translate(-50%, -3%);
     border: 2px solid #000000;
     border-radius: 5px;
@@ -73,11 +73,7 @@ const Box = styled.div`
   left: 50%;
   transform: translate(-50%, -50%);
   }
-  @media (max-height: 640px) {
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -47%);
-  }
+ 
 `;
 const Title = styled.div`
   transition: 0.5s ease;
