@@ -21,6 +21,11 @@ const Glass = styled.div`
     width: ${window.innerHeight * 0.4}px;
     height: ${window.innerHeight * 0.4}px;
   }
+  @media (max-width: 800px),(max-height:640px) {
+    width: ${window.innerHeight * 0.4}px;
+    height: ${window.innerHeight * 0.4}px;
+    
+  }
 `;
 
 const Frame = styled.div`
@@ -33,7 +38,12 @@ const Frame = styled.div`
   margin: 4px;
   border-radius: 5px;
   transition: 1s ease;
-  @media (max-width: 800px) {
+  @media (max-width: 800px),(min-height:640px) {
+    width: ${window.innerHeight * 0.4}px;
+    height: ${window.innerHeight * 0.4}px;
+    margin: 5px;
+  }
+  @media (max-width: 800px),(max-height:640px) {
     width: ${window.innerHeight * 0.4}px;
     height: ${window.innerHeight * 0.4}px;
     margin: 5px;

@@ -68,10 +68,15 @@ const Box = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  @media (max-width: 800px) {
+  @media (max-width: 800px),(min-height:640px) {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  }
+  @media (max-width: 800px),(max-height:640px) {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -47%);
   }
  
 `;
