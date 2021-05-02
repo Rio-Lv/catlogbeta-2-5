@@ -26,12 +26,13 @@ const BackBox = styled.div`
   }
 `;
 const BackBoxShade = styled.div`
+
   left: 50%;
   position: fixed;
   height: 100%;
   transform: translate(-50%, 0);
   top: 0px;
-  display: flex;
+  display: none;
   flex-direction: column;
   /* background-color: #6d6d6d; */
   overflow: scroll;
