@@ -3,9 +3,7 @@ const Box = styled.div`
   display: none;
   left: 50%;
   position: fixed;
-  height: 95%;
-  transform: translate(-50%, 10px);
-  top: 50px;
+  transform: translate(-50%, 0px);
   display: flex;
   flex-direction: column;
 

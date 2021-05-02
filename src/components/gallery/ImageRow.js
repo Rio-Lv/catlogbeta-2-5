@@ -81,8 +81,8 @@ function ImageRow(props) {
         >
           {title}
         </Title>
-        <Row>
-          <ImageBox reference={first}></ImageBox>
+        <Row >
+          <ImageBox reference={first} ></ImageBox>
           {expanded ? (
             <div style = {{display:"flex",flexDirection:window.innerWidth>700?"horizontal":"column"}}>
               <ImageBox reference={second}></ImageBox>

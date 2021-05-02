@@ -67,19 +67,30 @@ function Grid(props) {
       {closeUp ? (
         <CloseUp reference={reference} setReference={setReference}></CloseUp>
       ) : (
-        <Box>
+        <Box
+          style={{
+            // border: "3px solid blue",
+            top: "-10px",
+            height: "105%",
+          }}
+        >
           <div
             style={{
+              // border:"3px solid red",
               transform:
                 window.innerWidth > 700
-                  ? "translate(0,190px)"
-                  : "translate(0,5px)",
+                  ? "translate(0,280px)"
+                  : "translate(0,50px)",
               position: window.innerWidth < 700 ? "fixed" : "static",
               transition: ".8s ease",
             }}
             id="MyGalleryCenter"
           >
-            <FadeIn>{boxes}</FadeIn>
+            <FadeIn>
+              <div style={{ height: window.innerWidth>700? "70px": "32px"}}></div>
+              {boxes}
+            </FadeIn>
+            <div style={{ height: "100px" }}></div>
           </div>
         </Box>
       )}
